@@ -3,21 +3,13 @@
 
     <group android:checkableBehavior="single">
         <item
-            android:id="@+id/nav_camera"
-
-            android:title="Menu" />
+            android:id="@+id/nav_home"
+            android:icon="@drawable/ic_home"
+            android:title="Trang chủ" />
         <item
-            android:id="@+id/nav_gallery"
-
-            android:title="Menu" />
-        <item
-            android:id="@+id/nav_slideshow"
-
-            android:title="Menu" />
-        <item
-            android:id="@+id/nav_manage"
-
-            android:title="Menu" />
+            android:id="@+id/nav_save"
+            android:icon="@drawable/ic_save_nav"
+            android:title="Trang lưu" />
     </group>
 
 

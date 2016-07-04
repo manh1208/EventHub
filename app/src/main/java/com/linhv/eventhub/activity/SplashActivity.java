@@ -5,6 +5,7 @@ import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
+import com.facebook.FacebookSdk;
 import com.linhv.eventhub.R;
 
 public class SplashActivity extends AppCompatActivity {
@@ -15,10 +16,11 @@ public class SplashActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
+//        FacebookSdk.sdkInitialize(getApplicationContext());
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                Intent i = new Intent(getApplicationContext(), MainActivity.class);
+                Intent i = new Intent(getApplicationContext(), LoginActivity.class);
                 startActivity(i);
                 overridePendingTransition(R.anim.right_in, R.anim.left_out);
                 finish();

@@ -50,7 +50,7 @@ public class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
             }
         }else{
 
-//            mIcon1 = BitmapFactory.decodeResource(mcontext.getResources(),R.drawable.default_avatar);
+//            mIcon1 = BitmapFactory.decodeResource(mcontext.getResources(),R.drawable.image_default_avatar);
         }
 
         return mIcon1;

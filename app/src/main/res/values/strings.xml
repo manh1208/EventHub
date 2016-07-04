@@ -1,9 +1,15 @@
 <resources>
     <string name="app_name">EventHub</string>
     <string name="title_activity_main">MainActivity</string>
-
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
-
     <string name="action_settings">Settings</string>
+    <string name="facebook_app_id">629856657169277</string>
+    <string-array name="locations">
+        <item>Hà Nội</item>
+        <item>Đà Nẵng</item>
+        <item>Hồ Chí Minh</item>
+        <item>Các địa điểm khác</item>
+        <item>Tất cả các địa điểm</item>
+    </string-array>
 </resources>
