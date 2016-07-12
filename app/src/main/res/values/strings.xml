@@ -12,4 +12,5 @@
         <item>Các địa điểm khác</item>
         <item>Tất cả các địa điểm</item>
     </string-array>
+    <string name="title_activity_search">SearchActivity</string>
 </resources>
