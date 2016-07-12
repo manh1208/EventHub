@@ -1,5 +1,6 @@
 package com.linhv.eventhub.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.app.Fragment;
@@ -90,11 +91,14 @@ public class MainActivity extends AppCompatActivity
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.menu_search) {
-            viewHolder.toolbar.setTitle("Tìm kiếm sự kiện");
-            getSupportFragmentManager()
-                    .beginTransaction()
-                    .replace(R.id.frame_main, new SearchFragment())
-                    .commit();
+//            viewHolder.toolbar.setTitle("Tìm kiếm sự kiện");
+//            getSupportFragmentManager()
+//                    .beginTransaction()
+//                    .replace(R.id.frame_main, new SearchFragment())
+//                    .commit();
+            Intent intent = new Intent(MainActivity.this,SearchActivity.class);
+            startActivity(intent);
+            overridePendingTransition(R.anim.right_in, R.anim.left_out);
             return true;
         }
 
