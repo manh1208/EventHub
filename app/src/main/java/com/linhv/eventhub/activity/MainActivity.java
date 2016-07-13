@@ -1,10 +1,14 @@
 package com.linhv.eventhub.activity;
 
+import android.app.SearchManager;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v7.widget.SearchView;
+import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -23,6 +27,8 @@ import com.linhv.eventhub.fragment.SearchFragment;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
     ViewHolder viewHolder;
+    private SearchView.OnQueryTextListener queryTextListener;
+    private SearchView searchView = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,6 +36,7 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         viewHolder = new ViewHolder();
         viewHolder.toolbar = (Toolbar) findViewById(R.id.toolbar);
+        viewHolder.toolbar.setTitle("Trang chủ");
         setSupportActionBar(viewHolder.toolbar);
 
         viewHolder.drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -49,7 +56,7 @@ public class MainActivity extends AppCompatActivity
 
         viewHolder.nvMenu = (NavigationView) findViewById(R.id.nav_view);
         viewHolder.nvMenu.setNavigationItemSelectedListener(this);
-        viewHolder.toolbar.setTitle("Trang chủ");
+
         getSupportFragmentManager()
                 .beginTransaction()
                 .replace(R.id.frame_main, new HomeFragment())
@@ -78,7 +85,32 @@ public class MainActivity extends AppCompatActivity
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
+        MenuItem searchItem = menu.findItem(R.id.menu_search);
 
+        SearchManager searchManager = (SearchManager) MainActivity.this.getSystemService(Context.SEARCH_SERVICE);
+        if (searchItem != null) {
+            searchView = (SearchView) searchItem.getActionView();
+        }
+        if (searchView != null) {
+            searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+
+            queryTextListener = new SearchView.OnQueryTextListener() {
+                @Override
+                public boolean onQueryTextChange(String newText) {
+                    Log.i("onQueryTextChange", newText);
+
+                    return true;
+                }
+
+                @Override
+                public boolean onQueryTextSubmit(String query) {
+                    Log.i("onQueryTextSubmit", query);
+
+                    return true;
+                }
+            };
+            searchView.setOnQueryTextListener(queryTextListener);
+        }
         return true;
     }
 
@@ -90,18 +122,18 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.menu_search) {
+        if (id == R.id.menu_filter) {
 //            viewHolder.toolbar.setTitle("Tìm kiếm sự kiện");
 //            getSupportFragmentManager()
 //                    .beginTransaction()
 //                    .replace(R.id.frame_main, new SearchFragment())
 //                    .commit();
-            Intent intent = new Intent(MainActivity.this,SearchActivity.class);
+            Intent intent = new Intent(MainActivity.this, SearchActivity.class);
             startActivity(intent);
             overridePendingTransition(R.anim.right_in, R.anim.left_out);
             return true;
         }
-
+        searchView.setOnQueryTextListener(queryTextListener);
         return super.onOptionsItemSelected(item);
     }
 
@@ -120,8 +152,14 @@ public class MainActivity extends AppCompatActivity
             viewHolder.toolbar.setTitle("Trang chủ");
             fragment = new HomeFragment();
         } else if (id == R.id.nav_save) {
-            viewHolder.toolbar.setTitle("Trang lưu");
+            viewHolder.toolbar.setTitle("Sự kiện đã lưu");
             fragment = new EventStoragedFragment();
+        }else if (id==R.id.nav_logout){
+            Intent intent  = new Intent(MainActivity.this,LoginActivity.class);
+            startActivity(intent);
+            overridePendingTransition(R.anim.left_in,R.anim.right_out);
+            finish();
+            return true;
         }
         if (fragment != null) {
             getSupportFragmentManager()

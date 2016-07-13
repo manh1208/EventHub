@@ -4,7 +4,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorPrimary"
-    tools:context="com.linhv.eventhub.activity.LoginActivity">
+    tools:context="com.linhv.eventhub.activity.LoginActivity"
+    android:descendantFocusability="beforeDescendants"
+    android:focusableInTouchMode="true">
 
     <com.linhv.eventhub.custom.CustomImage
         android:id="@+id/logo"

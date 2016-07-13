@@ -14,24 +14,24 @@
         android:background="@color/colorPrimary"
         android:orientation="vertical">
 
-        <EditText
-            android:id="@+id/btn_search_event_name"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginLeft="50sp"
-            android:layout_marginRight="50sp"
-            android:layout_marginTop="40sp"
-            android:background="@drawable/background_search_event_name"
-            android:drawableLeft="@drawable/ic_search"
-            android:drawablePadding="0sp"
-            android:gravity="center"
-            android:hint="Tên sự kiện"
-            android:textColorHint="#aee0ed"
-            android:padding="10sp"
-            android:paddingLeft="20sp"
-            android:textColor="#fff"
-            android:textSize="20sp" />
+        <!--<EditText-->
+            <!--android:id="@+id/btn_search_event_name"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_gravity="center"-->
+            <!--android:layout_marginLeft="50sp"-->
+            <!--android:layout_marginRight="50sp"-->
+            <!--android:layout_marginTop="40sp"-->
+            <!--android:background="@drawable/background_search_event_name"-->
+            <!--android:drawableLeft="@drawable/ic_search"-->
+            <!--android:drawablePadding="0sp"-->
+            <!--android:gravity="center"-->
+            <!--android:hint="Tên sự kiện"-->
+            <!--android:textColorHint="#aee0ed"-->
+            <!--android:padding="10sp"-->
+            <!--android:paddingLeft="20sp"-->
+            <!--android:textColor="#fff"-->
+            <!--android:textSize="20sp" />-->
 
         <LinearLayout
             android:layout_width="match_parent"

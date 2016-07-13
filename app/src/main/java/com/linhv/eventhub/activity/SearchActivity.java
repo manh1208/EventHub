@@ -34,7 +34,7 @@ public class SearchActivity extends AppCompatActivity  implements View.OnClickLi
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        toolbar.setTitle("Tìm kiếm");
+        toolbar.setTitle("Lọc");
         setSupportActionBar(toolbar);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
@@ -54,12 +54,12 @@ public class SearchActivity extends AppCompatActivity  implements View.OnClickLi
 
     private void init() {
         viewHolder = new ViewHolder();
-        viewHolder.btnSearchName = (EditText) findViewById(R.id.btn_search_event_name);
+//        viewHolder.btnSearchName = (EditText) findViewById(R.id.btn_search_event_name);
         viewHolder.tvLocation = (TextView) findViewById(R.id.tv_search_location);
         viewHolder.tvType = (TextView) findViewById(R.id.tv_search_type);
         viewHolder.tvDateTime = (TextView) findViewById(R.id.tv_search_date_time);
         viewHolder.btnDone = (Button) findViewById(R.id.btn_search_done);
-        viewHolder.btnSearchName.setOnClickListener(this);
+//        viewHolder.btnSearchName.setOnClickListener(this);
         viewHolder.tvLocation.setOnClickListener(this);
         viewHolder.tvType.setOnClickListener(this);
         viewHolder.tvDateTime.setOnClickListener(this);
@@ -129,7 +129,7 @@ public class SearchActivity extends AppCompatActivity  implements View.OnClickLi
     }
 
     private final class ViewHolder {
-        EditText btnSearchName;
+//        EditText btnSearchName;
         TextView tvLocation;
         TextView tvType;
         TextView tvDateTime;
