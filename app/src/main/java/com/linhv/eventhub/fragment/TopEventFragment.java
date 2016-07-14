@@ -40,16 +40,16 @@ public class TopEventFragment extends Fragment {
 
     private List<Event> loadEvent() {
         List<Event> events = new ArrayList<Event>();
-        events.add(new Event());
-        events.add(new Event());
-        events.add(new Event());
-        events.add(new Event());
-        events.add(new Event());
-        events.add(new Event());
-        events.add(new Event());
-        events.add(new Event());
-        events.add(new Event());
-        events.add(new Event());
+//        events.add(new Event());
+//        events.add(new Event());
+//        events.add(new Event());
+//        events.add(new Event());
+//        events.add(new Event());
+//        events.add(new Event());
+//        events.add(new Event());
+//        events.add(new Event());
+//        events.add(new Event());
+//        events.add(new Event());
         return events;
     }
 

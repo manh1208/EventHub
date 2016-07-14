@@ -1,6 +1,7 @@
 package com.linhv.eventhub.adapter;
 
 import android.content.Context;
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +16,7 @@ import com.linhv.eventhub.custom.CustomImage;
 import com.linhv.eventhub.custom.CustomTextViewLight;
 import com.linhv.eventhub.model.Event;
 import com.linhv.eventhub.utils.DataUtils;
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -64,8 +66,19 @@ public class EventAdapter extends ArrayAdapter<Event> implements View.OnClickLis
             viewHolder = (ViewHolder) convertView.getTag();
         }
         Event event = getItem(position);
-
-
+        Picasso.with(mContext).load(Uri.parse(DataUtils.URL+event.getImageUrl()))
+                .placeholder(R.drawable.image_cover_event)
+                .error(R.drawable.image_cover_event)
+                .into(viewHolder.ivCoverEvent);
+        if (event.isFree()){
+            viewHolder.ivHot.setVisibility(View.VISIBLE);
+            viewHolder.ivHot.setImageResource(R.drawable.ic_free);
+        }else{
+            viewHolder.ivHot.setVisibility(View.GONE);
+        }
+        viewHolder.tvEventName.setText(event.getName());
+        viewHolder.tvEventDate.setText(event.getStartDate());
+//        viewHolder.tvEventType.setText(event.get());
         viewHolder.btnSave.setOnClickListener(this);
         return convertView;
     }
@@ -79,6 +92,11 @@ public class EventAdapter extends ArrayAdapter<Event> implements View.OnClickLis
                 Toast.makeText(mContext, "Saved", Toast.LENGTH_SHORT).show();
                 break;
         }
+    }
+
+    public void setEventList(List<Event> eventList) {
+        this.mEvents = eventList;
+        notifyDataSetChanged();
     }
 
     private class ViewHolder {

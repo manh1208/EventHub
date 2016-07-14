@@ -1,5 +1,6 @@
 package com.linhv.eventhub.model;
 
+import com.facebook.Profile;
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -15,8 +16,11 @@ public class User {
     @SerializedName("UserName")
     private String userName;
 
-    @SerializedName("Fullname")
+    @SerializedName("FullName")
     private String fullName;
+
+    @SerializedName("Password")
+    private String password;
 
     @SerializedName("CreatedTimeString")
     private String createdTime;
@@ -24,7 +28,20 @@ public class User {
     @SerializedName("ProfileImageUrl")
     private String ImageUrl;
 
-    public User() {
+    public User(){
+
+    }
+
+    public User(String email, String userName, String fullName, String password) {
+        this.email = email;
+        this.userName = userName;
+        this.fullName = fullName;
+        this.password = password;
+    }
+
+    public User(Profile profile) {
+        this.setFullName(profile.getName());
+        this.setImageUrl(profile.getProfilePictureUri(500, 500).toString());
     }
 
     public String getId() {
@@ -73,5 +90,13 @@ public class User {
 
     public void setImageUrl(String imageUrl) {
         ImageUrl = imageUrl;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 }

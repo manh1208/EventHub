@@ -3,6 +3,7 @@ package com.linhv.eventhub.activity;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.app.Fragment;
@@ -18,17 +19,32 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.widget.TextView;
+import android.widget.Toast;
 
+import com.facebook.FacebookSdk;
+import com.facebook.login.LoginManager;
 import com.linhv.eventhub.R;
+import com.linhv.eventhub.custom.RoundedImageView;
 import com.linhv.eventhub.fragment.EventStoragedFragment;
 import com.linhv.eventhub.fragment.HomeFragment;
 import com.linhv.eventhub.fragment.SearchFragment;
+import com.linhv.eventhub.model.response_model.LoginResponseModel;
+import com.linhv.eventhub.services.RestService;
+import com.linhv.eventhub.utils.DataUtils;
+import com.linhv.eventhub.utils.QuickSharePreferences;
+import com.squareup.picasso.Picasso;
+
+import retrofit.Callback;
+import retrofit.RetrofitError;
+import retrofit.client.Response;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
     ViewHolder viewHolder;
     private SearchView.OnQueryTextListener queryTextListener;
     private SearchView searchView = null;
+    private RestService restService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,6 +78,30 @@ public class MainActivity extends AppCompatActivity
                 .replace(R.id.frame_main, new HomeFragment())
                 .commit();
         viewHolder.nvMenu.setCheckedItem(R.id.nav_home);
+        viewHolder.headerView = viewHolder.nvMenu.inflateHeaderView(R.layout.nav_header_main);
+        viewHolder.ivAvatar = (RoundedImageView) viewHolder.headerView.findViewById(R.id.iv_user_avatar);
+        viewHolder.tvFullname = (TextView) viewHolder.headerView.findViewById(R.id.txt_user_fullname);
+        viewHolder.tvEmail = (TextView) viewHolder.headerView.findViewById(R.id.txt_user_email);
+        String userId = DataUtils.getINSTANCE(getApplicationContext()).getmPreferences().getString(QuickSharePreferences.SHARE_USERID,"");
+        restService = new RestService();
+        restService.getUserService().getUserInfo(userId, new Callback<LoginResponseModel>() {
+            @Override
+            public void success(LoginResponseModel responseModel, Response response) {
+                if (responseModel.isSucceed()) {
+                    viewHolder.tvFullname.setText(responseModel.getUser().getFullName());
+                    viewHolder.tvEmail.setText(responseModel.getUser().getEmail());
+                    Picasso.with(MainActivity.this).load(Uri.parse(DataUtils.URL+responseModel.getUser().getImageUrl()))
+                            .placeholder(R.drawable.image_default_avatar)
+                            .error(R.drawable.image_default_avatar)
+                            .into(viewHolder.ivAvatar);
+                }
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                Toast.makeText(MainActivity.this, "Kiểm tra lại kết nối internet", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     @Override
@@ -148,18 +188,24 @@ public class MainActivity extends AppCompatActivity
         for (int i = 0; i < fm.getBackStackEntryCount(); ++i) {
             fm.popBackStack();
         }
-        if (id == R.id.nav_home) {
-            viewHolder.toolbar.setTitle("Trang chủ");
-            fragment = new HomeFragment();
-        } else if (id == R.id.nav_save) {
-            viewHolder.toolbar.setTitle("Sự kiện đã lưu");
-            fragment = new EventStoragedFragment();
-        }else if (id==R.id.nav_logout){
-            Intent intent  = new Intent(MainActivity.this,LoginActivity.class);
-            startActivity(intent);
-            overridePendingTransition(R.anim.left_in,R.anim.right_out);
-            finish();
-            return true;
+        switch (id){
+            case R.id.nav_home:
+                viewHolder.toolbar.setTitle("Trang chủ");
+                fragment = new HomeFragment();
+                break;
+            case R.id.nav_save:
+                viewHolder.toolbar.setTitle("Sự kiện đã lưu");
+                fragment = new EventStoragedFragment();
+                break;
+            case R.id.nav_logout:
+                DataUtils.getINSTANCE(getApplicationContext()).getmPreferences().edit().clear().commit();
+                FacebookSdk.sdkInitialize(getApplicationContext());
+                LoginManager.getInstance().logOut();
+                Intent intent  = new Intent(MainActivity.this,LoginActivity.class);
+                startActivity(intent);
+                overridePendingTransition(R.anim.left_in,R.anim.right_out);
+                finish();
+                return true;
         }
         if (fragment != null) {
             getSupportFragmentManager()
@@ -177,5 +223,9 @@ public class MainActivity extends AppCompatActivity
         NavigationView nvMenu;
         CoordinatorLayout layoutContentMain;
         Toolbar toolbar;
+        RoundedImageView ivAvatar;
+        TextView tvFullname;
+        TextView tvEmail;
+        public View headerView;
     }
 }

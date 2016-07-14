@@ -1,35 +1,186 @@
 package com.linhv.eventhub.activity;
 
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.facebook.CallbackManager;
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
 import com.facebook.FacebookSdk;
+import com.facebook.GraphRequest;
+import com.facebook.GraphResponse;
+import com.facebook.Profile;
+import com.facebook.ProfileTracker;
+import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.linhv.eventhub.R;
+import com.linhv.eventhub.model.User;
+import com.linhv.eventhub.model.request_model.ExternalLoginRequestModel;
+import com.linhv.eventhub.model.request_model.LoginRequestModel;
+import com.linhv.eventhub.model.response_model.ExternalLoginResponseModel;
+import com.linhv.eventhub.model.response_model.LoginResponseModel;
+import com.linhv.eventhub.services.RestService;
 import com.linhv.eventhub.utils.DataUtils;
+import com.linhv.eventhub.utils.QuickSharePreferences;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.Arrays;
+
+import retrofit.Callback;
+import retrofit.RetrofitError;
+import retrofit.client.Response;
 
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
     ViewHolder viewHolder;
+    private CallbackManager callbackManager;
+    private User user;
+    private RestService restService;
+    private Context mContext;
+    private ProgressDialog progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+        mContext = this;
+        restService = new RestService();
         viewHolder = new ViewHolder();
+        progressDialog = new ProgressDialog(mContext);
+        progressDialog.setCanceledOnTouchOutside(true);
         viewHolder.txtUsername = (EditText) findViewById(R.id.txt_login_username_email);
         viewHolder.txtPassword = (EditText) findViewById(R.id.txt_login_password);
         viewHolder.btnLogin = (ImageButton) findViewById(R.id.btn_login_next);
         viewHolder.txtRegister = (TextView) findViewById(R.id.lb_login_register);
         viewHolder.btnLogin.setOnClickListener(this);
         viewHolder.txtRegister.setOnClickListener(this);
-//        viewHolder.btnLoginWithFacebook = (LoginButton) findViewById(R.id.btn_login_with_facebook);
+        FacebookSdk.sdkInitialize(getApplicationContext());
+        callbackManager = CallbackManager.Factory.create();
+        viewHolder.btnLoginWithFacebook = (LoginButton) findViewById(R.id.btn_login_with_facebook);
+        viewHolder.btnLoginWithFacebook.setReadPermissions(Arrays.asList("public_profile", "email"));
+        if (DataUtils.getINSTANCE(getApplicationContext()).getmPreferences().getString(QuickSharePreferences.SHARE_USERID,"").length()>0){
+            login();
+        }
+        viewHolder.btnLoginWithFacebook.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
+            private ProfileTracker mProfileTracker;
+            private Profile profile;
+            @Override
+            public void onSuccess(final LoginResult loginResult) {
+                progressDialog.show();
+                progressDialog.setMessage("Đang đăng nhập...");
+                if (Profile.getCurrentProfile() == null) {
+                    mProfileTracker = new ProfileTracker() {
+
+                        @Override
+                        protected void onCurrentProfileChanged(Profile oldProfile, Profile currentProfile) {
+                            profile = currentProfile;
+                            user = new User(profile);
+                            requestEmail(loginResult);
+                            mProfileTracker.stopTracking();
+
+                        }
+                    };
+                } else {
+                    profile = Profile.getCurrentProfile();
+                    user = new User(profile);
+                    requestEmail(loginResult);
+                }
+            }
+
+            @Override
+            public void onCancel() {
+                Toast.makeText(LoginActivity.this, "Hủy đăng nhập", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onError(FacebookException error) {
+                Toast.makeText(LoginActivity.this, "Đăng nhập không thành công: "+error.toString(), Toast.LENGTH_LONG).show();
+            }
+        });
 
 
+    }
+
+    private void login(){
+        Intent intent = new Intent(LoginActivity.this,MainActivity.class);
+        startActivity(intent);
+        overridePendingTransition(R.anim.right_in, R.anim.left_out);
+        finish();
+    }
+
+    private void requestEmail(LoginResult loginResult) {
+        GraphRequest graphRequest = GraphRequest.newMeRequest(loginResult.getAccessToken(), new GraphRequest.GraphJSONObjectCallback() {
+            @Override
+            public void onCompleted(JSONObject object, GraphResponse response) {
+                try {
+//                            Profile profile = Profile.getCurrentProfile();
+//                            user = new User(profile);
+                    user.setEmail(object.getString("email"));
+//                            user.setFacebookId(object.getString("id"));
+//                            user.setName(object.getString("name"));
+//                            user.setPhotoUri("http://graph.facebook.com/"+user.getFacebookId()+"/picture?type=large");
+                    sendLoginToServer();
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        Bundle parameters = new Bundle();
+        parameters.putString("fields", "id,name,email");
+        graphRequest.setParameters(parameters);
+        graphRequest.executeAsync();
+
+    }
+
+    private void sendLoginToServer() {
+        final ExternalLoginRequestModel requestModel = new ExternalLoginRequestModel(user);
+        restService.getUserService().externalLogin(requestModel, new Callback<ExternalLoginResponseModel>() {
+            @Override
+            public void success(ExternalLoginResponseModel responseModel, Response response) {
+                progressDialog.dismiss();
+                if (responseModel.isSucceed()) {
+                    SharedPreferences.Editor editor = DataUtils.getINSTANCE(getApplicationContext()).getmPreferences().edit();
+                    editor.putString(QuickSharePreferences.SHARE_USERID, responseModel.getUser().getId());
+                    editor.commit();
+//                    SharedPreferences sharedPreferences =
+//                            PreferenceManager.getDefaultSharedPreferences(mContext);
+//                    // Start IntentService to register this application with GCM.
+//                    sharedPreferences.edit().putString(QuickstartPreferences.USER_ID, externalLoginResponseModel.getUser().getUserId()).apply();
+//                    regisGCM();
+                   login();
+                } else {
+                    Log.d("Login Activity", responseModel.getErrors().get(0));
+                    Toast.makeText(LoginActivity.this, responseModel.getErrors().get(0), Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                progressDialog.dismiss();
+                Toast.makeText(LoginActivity.this, "Login fail. Please check your connection and try again.", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        callbackManager.onActivityResult(requestCode, resultCode, data);
     }
 
     @Override
@@ -53,10 +204,26 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 if (focus != null) {
                     focus.requestFocus();
                 } else {
-                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                    startActivity(intent);
-                    overridePendingTransition(R.anim.right_in, R.anim.left_out);
-                    finish();
+                    restService.getUserService().login(new LoginRequestModel(username, password), new Callback<LoginResponseModel>() {
+                        @Override
+                        public void success(LoginResponseModel responseModel, Response response) {
+                            if (responseModel.isSucceed()){
+                                SharedPreferences.Editor editor = DataUtils.getINSTANCE(getApplicationContext()).getmPreferences().edit();
+                                editor.putString(QuickSharePreferences.SHARE_USERID, responseModel.getUser().getId());
+                                editor.commit();
+                                login();
+                            }else{
+                                viewHolder.txtUsername.setError(responseModel.getMessage());
+                                viewHolder.txtUsername.requestFocus();
+//                                Toast.makeText(LoginActivity.this, responseModel.getMessage(), Toast.LENGTH_SHORT).show();
+                            }
+                        }
+
+                        @Override
+                        public void failure(RetrofitError error) {
+
+                        }
+                    });
                 }
                 break;
             case R.id.lb_login_register:
@@ -72,6 +239,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         EditText txtPassword;
         ImageButton btnLogin;
         TextView txtRegister;
-//        LoginButton btnLoginWithFacebook;
+        LoginButton btnLoginWithFacebook;
     }
 }

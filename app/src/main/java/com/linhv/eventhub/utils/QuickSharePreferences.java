@@ -5,4 +5,5 @@ package com.linhv.eventhub.utils;
  */
 public class QuickSharePreferences {
     public static final String FONT_LIGHT = "fonts/instruction_description.otf";
+    public static final String SHARE_USERID="Share_UserId";
 }

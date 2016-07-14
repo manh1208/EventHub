@@ -70,14 +70,14 @@
             android:textSize="16sp"
             android:textAllCaps="true"
             android:textColor="#fff" />
-        <!--<com.facebook.login.widget.LoginButton-->
-            <!--android:id="@+id/btn_login_with_facebook"-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:layout_gravity="center_horizontal"-->
-            <!--android:layout_marginTop="40dp"-->
-            <!--android:textSize="20sp"-->
-            <!--android:layout_marginBottom="30dp" />-->
+        <com.facebook.login.widget.LoginButton
+            android:id="@+id/btn_login_with_facebook"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="40dp"
+            android:textSize="20sp"
+            android:layout_marginBottom="30dp" />
     </LinearLayout>
 
 </RelativeLayout>

@@ -50,11 +50,12 @@
                 android:src="@drawable/ic_save" />
 
             <LinearLayout
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="20sp"
                 android:layout_marginTop="5sp"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:layout_toLeftOf="@+id/btn_top_event_save">
 
                 <com.linhv.eventhub.custom.CustomTextViewLight
                     android:id="@+id/tv_top_event_name"
