@@ -22,6 +22,7 @@ import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
 import com.facebook.Profile;
 import com.facebook.ProfileTracker;
+import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.linhv.eventhub.R;
@@ -59,7 +60,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         restService = new RestService();
         viewHolder = new ViewHolder();
         progressDialog = new ProgressDialog(mContext);
-        progressDialog.setCanceledOnTouchOutside(true);
+        progressDialog.setCanceledOnTouchOutside(false);
         viewHolder.txtUsername = (EditText) findViewById(R.id.txt_login_username_email);
         viewHolder.txtPassword = (EditText) findViewById(R.id.txt_login_password);
         viewHolder.btnLogin = (ImageButton) findViewById(R.id.btn_login_next);
@@ -70,12 +71,13 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         callbackManager = CallbackManager.Factory.create();
         viewHolder.btnLoginWithFacebook = (LoginButton) findViewById(R.id.btn_login_with_facebook);
         viewHolder.btnLoginWithFacebook.setReadPermissions(Arrays.asList("public_profile", "email"));
-        if (DataUtils.getINSTANCE(getApplicationContext()).getmPreferences().getString(QuickSharePreferences.SHARE_USERID,"").length()>0){
+        if (DataUtils.getINSTANCE(getApplicationContext()).getmPreferences().getString(QuickSharePreferences.SHARE_USERID, "").length() > 0) {
             login();
         }
         viewHolder.btnLoginWithFacebook.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             private ProfileTracker mProfileTracker;
             private Profile profile;
+
             @Override
             public void onSuccess(final LoginResult loginResult) {
                 progressDialog.show();
@@ -93,6 +95,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                         }
                     };
                 } else {
+
                     profile = Profile.getCurrentProfile();
                     user = new User(profile);
                     requestEmail(loginResult);
@@ -106,15 +109,15 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
             @Override
             public void onError(FacebookException error) {
-                Toast.makeText(LoginActivity.this, "Đăng nhập không thành công: "+error.toString(), Toast.LENGTH_LONG).show();
+                Toast.makeText(LoginActivity.this, "Đăng nhập không thành công: " + error.toString(), Toast.LENGTH_LONG).show();
             }
         });
 
 
     }
 
-    private void login(){
-        Intent intent = new Intent(LoginActivity.this,MainActivity.class);
+    private void login() {
+        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
         startActivity(intent);
         overridePendingTransition(R.anim.right_in, R.anim.left_out);
         finish();
@@ -160,8 +163,10 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 //                    // Start IntentService to register this application with GCM.
 //                    sharedPreferences.edit().putString(QuickstartPreferences.USER_ID, externalLoginResponseModel.getUser().getUserId()).apply();
 //                    regisGCM();
-                   login();
+                    login();
                 } else {
+//                    viewHolder.btnLoginWithFacebook;
+                    LoginManager.getInstance().logOut();
                     Log.d("Login Activity", responseModel.getErrors().get(0));
                     Toast.makeText(LoginActivity.this, responseModel.getErrors().get(0), Toast.LENGTH_SHORT).show();
                 }
@@ -169,12 +174,13 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
             @Override
             public void failure(RetrofitError error) {
+                LoginManager.getInstance().logOut();
+//                LoginManager.getInstance().logOut();
                 progressDialog.dismiss();
                 Toast.makeText(LoginActivity.this, "Login fail. Please check your connection and try again.", Toast.LENGTH_SHORT).show();
             }
         });
     }
-
 
 
     @Override
@@ -207,12 +213,12 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     restService.getUserService().login(new LoginRequestModel(username, password), new Callback<LoginResponseModel>() {
                         @Override
                         public void success(LoginResponseModel responseModel, Response response) {
-                            if (responseModel.isSucceed()){
+                            if (responseModel.isSucceed()) {
                                 SharedPreferences.Editor editor = DataUtils.getINSTANCE(getApplicationContext()).getmPreferences().edit();
                                 editor.putString(QuickSharePreferences.SHARE_USERID, responseModel.getUser().getId());
                                 editor.commit();
                                 login();
-                            }else{
+                            } else {
                                 viewHolder.txtUsername.setError(responseModel.getMessage());
                                 viewHolder.txtUsername.requestFocus();
 //                                Toast.makeText(LoginActivity.this, responseModel.getMessage(), Toast.LENGTH_SHORT).show();

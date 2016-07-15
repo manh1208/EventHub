@@ -2,10 +2,12 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:descendantFocusability="blocksDescendants"
     android:orientation="vertical"
     android:paddingLeft="10sp"
     android:paddingRight="10sp"
-    android:paddingTop="15sp">
+    android:paddingTop="10sp"
+    android:paddingBottom="10sp">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -44,9 +46,9 @@
                 android:layout_height="40sp"
                 android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
+                android:layout_marginRight="10sp"
                 android:background="@null"
                 android:scaleType="fitCenter"
-                android:layout_marginRight="10sp"
                 android:src="@drawable/ic_save" />
 
             <LinearLayout
@@ -54,8 +56,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="20sp"
                 android:layout_marginTop="5sp"
-                android:orientation="vertical"
-                android:layout_toLeftOf="@+id/btn_top_event_save">
+                android:layout_toLeftOf="@+id/btn_top_event_save"
+                android:orientation="vertical">
 
                 <com.linhv.eventhub.custom.CustomTextViewLight
                     android:id="@+id/tv_top_event_name"
@@ -87,12 +89,12 @@
                     android:id="@+id/tv_top_event_location"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="5sp"
                     android:background="@drawable/background_lable_city"
                     android:paddingLeft="10sp"
                     android:paddingRight="10sp"
                     android:text="Hồ Chí Minh"
-                    android:textColor="#fff"
-                    android:layout_marginTop="5sp"/>
+                    android:textColor="#fff" />
             </LinearLayout>
         </RelativeLayout>
     </LinearLayout>

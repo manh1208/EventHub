@@ -9,6 +9,7 @@ import android.os.Environment;
 import android.view.View;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
+import android.widget.Toast;
 
 //import com.google.android.gms.common.api.GoogleApiClient;
 
@@ -29,7 +30,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class DataUtils {
     public static String URL = "http://202.78.227.93:6996";
-
+//public static String URL = "http://192.168.150.67:19291";
 
 
     private static DataUtils INSTANCE = null;
@@ -109,6 +110,13 @@ public class DataUtils {
         return date;
     }
 
+    public static String parseDatetimeAPI(String s,String format){
+        s = s.replaceAll("\\D+","");
+        java.sql.Date date = new java.sql.Date(Long.parseLong(s));
+        SimpleDateFormat sdf = new SimpleDateFormat(format);
+        return sdf.format(date);
+    }
+
     public static String getTime(String s) throws ParseException {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
         Calendar cal = Calendar.getInstance();
@@ -148,6 +156,10 @@ public class DataUtils {
             animation1.setRepeatMode(Animation.REVERSE);
             v.startAnimation(animation1);
         }
+    }
+
+    public void ConnectionError(){
+        Toast.makeText(mContext, "Lỗi kết nối. Vui lòng thử lại", Toast.LENGTH_SHORT).show();
     }
 
 }

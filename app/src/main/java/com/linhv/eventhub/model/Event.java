@@ -2,6 +2,9 @@ package com.linhv.eventhub.model;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.sql.Date;
+import java.text.SimpleDateFormat;
+
 /**
  * Created by ManhNV on 7/5/2016.
  */
@@ -24,7 +27,7 @@ public class Event {
     @SerializedName("Description")
     private String description;
 
-    @SerializedName("StartDateString")
+    @SerializedName("StartDate")
     private String startDate;
 
     @SerializedName("EndDateString")
@@ -123,6 +126,7 @@ public class Event {
     }
 
     public void setStartDate(String startDate) {
+
         this.startDate = startDate;
     }
 
