@@ -25,7 +25,7 @@ public class User {
     @SerializedName("CreatedTimeString")
     private String createdTime;
 
-    @SerializedName("ProfileImageUrl")
+    @SerializedName("ImageUrl")
     private String ImageUrl;
 
     public User(){

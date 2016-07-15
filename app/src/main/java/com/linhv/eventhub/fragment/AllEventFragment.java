@@ -1,6 +1,7 @@
 package com.linhv.eventhub.fragment;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -10,9 +11,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
+import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.linhv.eventhub.R;
+import com.linhv.eventhub.activity.EventDetailActivity;
 import com.linhv.eventhub.adapter.EventAdapter;
 import com.linhv.eventhub.model.Event;
 import com.linhv.eventhub.model.response_model.GetEventsResponseModel;
@@ -76,6 +79,19 @@ public class AllEventFragment extends Fragment {
             public void onRefresh() {
 //                Toast.makeText(mContext, "Refresh", Toast.LENGTH_SHORT).show();
                 reloadAllEvent();
+            }
+        });
+
+        viewHolder.lvEvents.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Event event = eventAdapter.getItem(position);
+                Intent intent = new Intent(getActivity(), EventDetailActivity.class);
+                intent.putExtra("eventId",event.getId());
+                intent.putExtra("eventName",event.getName());
+                intent.putExtra("eventImage",event.getImageUrl());
+                getActivity().startActivity(intent);
+                getActivity().overridePendingTransition(R.anim.right_in,R.anim.left_out);
             }
         });
     }

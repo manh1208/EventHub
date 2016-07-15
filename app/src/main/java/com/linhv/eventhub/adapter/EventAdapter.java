@@ -66,7 +66,8 @@ public class EventAdapter extends ArrayAdapter<Event> implements View.OnClickLis
             viewHolder = (ViewHolder) convertView.getTag();
         }
         Event event = getItem(position);
-        Picasso.with(mContext).load(Uri.parse(DataUtils.URL+event.getImageUrl()))
+        String url = event.getImageUrl().contains("http")?event.getImageUrl():DataUtils.URL+event.getImageUrl();
+        Picasso.with(mContext).load(Uri.parse(url))
                 .placeholder(R.drawable.image_cover_event)
                 .error(R.drawable.image_cover_event)
                 .into(viewHolder.ivCoverEvent);
@@ -77,7 +78,7 @@ public class EventAdapter extends ArrayAdapter<Event> implements View.OnClickLis
             viewHolder.ivHot.setVisibility(View.GONE);
         }
         viewHolder.tvEventName.setText(event.getName());
-        viewHolder.tvEventDate.setText(event.getStartDate());
+        viewHolder.tvEventDate.setText(DataUtils.parseDatetimeAPI(event.getStartDate(),"dd - MMM - yyyy"));
 //        viewHolder.tvEventType.setText(event.get());
         viewHolder.btnSave.setOnClickListener(this);
         return convertView;

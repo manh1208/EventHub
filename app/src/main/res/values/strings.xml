@@ -14,4 +14,5 @@
     </string-array>
     <string name="title_activity_search">SearchActivity</string>
     <string name="search_hint">Tên sự kiện</string>
+    <string name="title_activity_detail_event">DetailEventActivity</string>
 </resources>
