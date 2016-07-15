@@ -5,7 +5,7 @@ android {
         event {
             keyAlias 'event'
             keyPassword 'captone'
-            storeFile file('D:/Code/GitHub/CapstoneEventHub/eventhub.keystore')
+            storeFile file('../eventhub.keystore')
             storePassword 'captone'
         }
     }
