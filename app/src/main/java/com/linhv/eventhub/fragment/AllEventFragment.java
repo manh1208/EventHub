@@ -1,21 +1,28 @@
 package com.linhv.eventhub.fragment;
 
+import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.SearchView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.linhv.eventhub.R;
 import com.linhv.eventhub.activity.EventDetailActivity;
+import com.linhv.eventhub.activity.SearchActivity;
 import com.linhv.eventhub.adapter.EventAdapter;
 import com.linhv.eventhub.model.Event;
 import com.linhv.eventhub.model.response_model.GetEventsResponseModel;
@@ -44,6 +51,14 @@ public class AllEventFragment extends Fragment {
     private boolean flag_loading;
     private RestService restService;
     private EventAdapter eventAdapter;
+    private SearchView.OnQueryTextListener queryTextListener;
+    private SearchView searchView;
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+    }
 
     @Nullable
     @Override
@@ -179,6 +194,88 @@ public class AllEventFragment extends Fragment {
     private final class ViewHolder {
         ListView lvEvents;
         SwipeRefreshLayout layoutRefresh;
+    }
+
+    @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+
+         super.onPrepareOptionsMenu(menu);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.main, menu);
+        MenuItem searchItem = menu.findItem(R.id.menu_search);
+
+        SearchManager searchManager = (SearchManager) mContext.getSystemService(Context.SEARCH_SERVICE);
+        searchView=null;
+        if (searchItem != null) {
+            searchView = (SearchView) searchItem.getActionView();
+        }
+        if (searchView != null) {
+            searchView.setSearchableInfo(searchManager.getSearchableInfo(getActivity().getComponentName()));
+
+            queryTextListener = new SearchView.OnQueryTextListener() {
+                @Override
+                public boolean onQueryTextChange(String newText) {
+                    Log.i("onQueryTextChange", newText);
+                    doSearch(newText);
+                    return true;
+                }
+
+                @Override
+                public boolean onQueryTextSubmit(String query) {
+                    Log.i("onQueryTextSubmit", query);
+
+                    return true;
+                }
+            };
+            searchView.setOnQueryTextListener(queryTextListener);
+            searchView.onActionViewCollapsed();
+        }
+
+    }
+
+    @Override
+    public void onOptionsMenuClosed(Menu menu) {
+        Toast.makeText(mContext, "Close", Toast.LENGTH_SHORT).show();
+        super.onOptionsMenuClosed(menu);
+    }
+
+    private void doSearch(String newText) {
+        if (newText!=null && newText.length()>0) {
+            List<Event> tmp = new ArrayList<>();
+            for (Event item : mEvents) {
+                if (item.getName().toUpperCase().contains(newText.toUpperCase()) || item.getAddress().toUpperCase().contains(newText.toUpperCase())) {
+                    tmp.add(item);
+                }
+            }
+
+            eventAdapter.setEventList(tmp);
+        }else{
+            eventAdapter.setEventList(mEvents);
+        }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.menu_filter) {
+//            viewHolder.toolbar.setTitle("Tìm kiếm sự kiện");
+//            getSupportFragmentManager()
+//                    .beginTransaction()
+//                    .replace(R.id.frame_main, new SearchFragment())
+//                    .commit();
+            Intent intent = new Intent(getActivity(), SearchActivity.class);
+            startActivity(intent);
+            getActivity().overridePendingTransition(R.anim.right_in, R.anim.left_out);
+            return true;
+        }
+        searchView.setOnQueryTextListener(queryTextListener);
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
