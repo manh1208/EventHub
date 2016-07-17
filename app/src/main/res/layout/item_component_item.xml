@@ -3,20 +3,18 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:paddingLeft="10sp"
-    android:paddingRight="10sp"
-    android:paddingTop="10sp"
     android:paddingBottom="10sp">
 
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#fff">
+        android:background="#fff"
+        android:paddingBottom="10sp">
 
-        <ImageView
+        <com.linhv.eventhub.custom.CustomImage
             android:layout_width="match_parent"
-            android:layout_height="100sp"
+            android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:src="@drawable/image_default_avatar"
             android:id="@+id/iv_item_image"/>

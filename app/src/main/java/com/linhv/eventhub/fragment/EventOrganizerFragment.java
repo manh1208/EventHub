@@ -2,9 +2,7 @@ package com.linhv.eventhub.fragment;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
-import android.support.v4.view.ViewPager;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -13,55 +11,48 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.linhv.eventhub.R;
-import com.linhv.eventhub.adapter.ComponentAdapter;
-import com.linhv.eventhub.adapter.ContentAdapter;
-import com.linhv.eventhub.model.Event;
-import com.linhv.eventhub.model.response_model.GetEventDetailResponseModel;
+import com.linhv.eventhub.adapter.OrganizerAdapter;
+import com.linhv.eventhub.model.Organizer;
+import com.linhv.eventhub.model.response_model.GetOrganizerResponseModel;
 import com.linhv.eventhub.services.RestService;
-import com.linhv.eventhub.utils.DataUtils;
-import com.linhv.eventhub.utils.QuickSharePreferences;
 
 import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
 
 /**
- * Created by ManhNV on 7/15/2016.
+ * Created by ManhNV on 7/17/2016.
  */
-public class ContentEventFragment extends Fragment {
-    ViewHolder viewHolder;
-    private ContentAdapter contentAdapter;
-    RestService restService;
+public class EventOrganizerFragment extends Fragment {
+
     private int eventId;
-    private String userId;
+    private RestService restService;
+    private ViewHolder viewHolder;
+    private OrganizerAdapter organizerAdapter;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.fragment_content, container, false);
+        View v = inflater.inflate(R.layout.fragment_organizer, container, false);
         eventId = getArguments().getInt("eventId", -1);
-        userId = DataUtils.getINSTANCE(getActivity()).getmPreferences().getString(QuickSharePreferences.SHARE_USERID, "");
         initView(v);
         return v;
-
     }
 
     private void initView(View v) {
-
         viewHolder = new ViewHolder();
         restService = new RestService();
-        viewHolder.listView = (RecyclerView) v.findViewById(R.id.lv_content);
+        viewHolder.listView = (RecyclerView) v.findViewById(R.id.lv_organizer);
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity().getApplicationContext());
         viewHolder.listView.setLayoutManager(mLayoutManager);
-        Event event = new Event();
-        contentAdapter = new ContentAdapter(getActivity(), event);
+        organizerAdapter = new OrganizerAdapter(getActivity(), new Organizer());
         viewHolder.listView.setItemAnimator(new DefaultItemAnimator());
-        viewHolder.listView.setAdapter(contentAdapter);
-        restService.getEventService().getEvent(eventId, userId, new Callback<GetEventDetailResponseModel>() {
+        viewHolder.listView.setAdapter(organizerAdapter);
+        restService.getEventService().getOrganizer(eventId, new Callback<GetOrganizerResponseModel>() {
             @Override
-            public void success(GetEventDetailResponseModel responseModel, Response response) {
+            public void success(GetOrganizerResponseModel responseModel, Response response) {
                 if (responseModel.isSucceed()) {
-                    contentAdapter.setEvent(responseModel.getEvent());
+                    organizerAdapter.setOrganizer(responseModel.getOrganizer());
                 }
             }
 

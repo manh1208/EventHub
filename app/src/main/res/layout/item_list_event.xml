@@ -24,7 +24,7 @@
                 android:id="@+id/iv_event_cover"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:src="@drawable/image_cover_event" />
+                android:src="@drawable/placeholder" />
 
             <ImageView
                 android:id="@+id/iv_event_hot"
@@ -32,7 +32,8 @@
                 android:layout_height="50sp"
                 android:layout_marginLeft="5sp"
                 android:layout_marginTop="5sp"
-                android:src="@drawable/ic_hot" />
+                android:src="@drawable/ic_hot"
+                android:visibility="gone"/>
         </RelativeLayout>
 
         <RelativeLayout

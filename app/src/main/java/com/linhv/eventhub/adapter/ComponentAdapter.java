@@ -10,6 +10,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.linhv.eventhub.R;
+import com.linhv.eventhub.custom.CustomImage;
 import com.linhv.eventhub.model.ComponentItem;
 import com.linhv.eventhub.utils.DataUtils;
 import com.squareup.picasso.Picasso;
@@ -65,11 +66,11 @@ public class ComponentAdapter extends RecyclerView.Adapter<ComponentAdapter.View
         private TextView txtName;
         private TextView txtDesc;
         private TextView txtDetail;
-        private ImageView ivImage;
+        private CustomImage ivImage;
 
         public ViewHolder(View convertView) {
             super(convertView);
-            ivImage = (ImageView) convertView.findViewById(R.id.iv_item_image);
+            ivImage = (CustomImage) convertView.findViewById(R.id.iv_item_image);
             txtName = (TextView) convertView.findViewById(R.id.txt_item_name);
             txtDesc = (TextView) convertView.findViewById(R.id.txt_item_description);
             txtDetail = (TextView) convertView.findViewById(R.id.txt_item_detail);

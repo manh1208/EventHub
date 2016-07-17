@@ -68,8 +68,8 @@ public class EventAdapter extends ArrayAdapter<Event> implements View.OnClickLis
         Event event = getItem(position);
         String url = event.getImageUrl().contains("http")?event.getImageUrl():DataUtils.URL+event.getImageUrl();
         Picasso.with(mContext).load(Uri.parse(url))
-                .placeholder(R.drawable.image_cover_event)
-                .error(R.drawable.image_cover_event)
+                .placeholder(R.drawable.placeholder)
+                .error(R.drawable.placeholder)
                 .into(viewHolder.ivCoverEvent);
         if (event.isFree()){
             viewHolder.ivHot.setVisibility(View.VISIBLE);
@@ -110,8 +110,4 @@ public class EventAdapter extends ArrayAdapter<Event> implements View.OnClickLis
         ImageButton btnSave;
     }
 
-    public void setEvents(List<Event> events) {
-        this.mEvents = events;
-        notifyDataSetChanged();
-    }
 }

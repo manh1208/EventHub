@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.SearchView;
 import android.util.Log;
@@ -38,7 +39,7 @@ import retrofit.client.Response;
 /**
  * Created by ManhNV on 7/5/2016.
  */
-public class AllEventFragment extends Fragment {
+public class AllEventFragment extends Fragment implements MenuItemCompat.OnActionExpandListener {
     private static final String TAG = "AllEventFragment";
     private Context mContext;
     private ViewHolder viewHolder;
@@ -190,6 +191,18 @@ public class AllEventFragment extends Fragment {
         viewHolder.lvEvents.removeFooterView(footerView);
     }
 
+    @Override
+    public boolean onMenuItemActionExpand(MenuItem item) {
+        Toast.makeText(mContext, "Open menu search", Toast.LENGTH_SHORT).show();
+        return true;
+    }
+
+    @Override
+    public boolean onMenuItemActionCollapse(MenuItem item) {
+        Toast.makeText(mContext, "Close Menu search", Toast.LENGTH_SHORT).show();
+        return true;
+    }
+
 
     private final class ViewHolder {
         ListView lvEvents;
@@ -220,14 +233,18 @@ public class AllEventFragment extends Fragment {
                 @Override
                 public boolean onQueryTextChange(String newText) {
                     Log.i("onQueryTextChange", newText);
-                    doSearch(newText);
+                    if (newText.length()<=0){
+                        eventAdapter.setEventList(mEvents);
+                        flag_loading =false;
+                    }
+//                    doSearch(newText);
                     return true;
                 }
 
                 @Override
                 public boolean onQueryTextSubmit(String query) {
                     Log.i("onQueryTextSubmit", query);
-
+                    doSearchAPI(query);
                     return true;
                 }
             };
@@ -235,6 +252,23 @@ public class AllEventFragment extends Fragment {
             searchView.onActionViewCollapsed();
         }
 
+    }
+
+    private void doSearchAPI(String query) {
+        flag_loading = true;
+        restService.getEventService().searchByName(query, 0, 10, new Callback<GetEventsResponseModel>() {
+            @Override
+            public void success(GetEventsResponseModel responseModel, Response response) {
+                if (responseModel.isSucceed()){
+                    eventAdapter.setEventList(responseModel.getEvents());
+                }
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+
+            }
+        });
     }
 
     @Override
@@ -275,6 +309,13 @@ public class AllEventFragment extends Fragment {
             return true;
         }
         searchView.setOnQueryTextListener(queryTextListener);
+        searchView.setOnCloseListener(new SearchView.OnCloseListener() {
+            @Override
+            public boolean onClose() {
+                Toast.makeText(mContext, "Close", Toast.LENGTH_SHORT).show();
+                return true;
+            }
+        });
         return super.onOptionsItemSelected(item);
     }
 
