@@ -29,8 +29,8 @@ import java.util.concurrent.TimeUnit;
  * Created by ManhNV on 6/16/2016.
  */
 public class DataUtils {
-    public static String URL = "http://202.78.227.93:6996";
-//public static String URL = "http://192.168.150.67:19291";
+//    public static String URL = "http://202.78.227.93:6996";
+public static String URL = "http://192.168.150.48:19291";
 
 
     private static DataUtils INSTANCE = null;

@@ -1,12 +1,18 @@
 package com.linhv.eventhub.services;
 
+import com.linhv.eventhub.model.request_model.RateEventRequestMode;
 import com.linhv.eventhub.model.response_model.GetComponentItemsResponseModel;
 import com.linhv.eventhub.model.response_model.GetEventComponentResponseModel;
 import com.linhv.eventhub.model.response_model.GetEventDetailResponseModel;
 import com.linhv.eventhub.model.response_model.GetEventsResponseModel;
+import com.linhv.eventhub.model.response_model.GetOrganizerResponseModel;
+import com.linhv.eventhub.model.response_model.RateEventResponseModel;
+import com.linhv.eventhub.model.response_model.Response;
 
 import retrofit.Callback;
+import retrofit.http.Body;
 import retrofit.http.GET;
+import retrofit.http.POST;
 import retrofit.http.Query;
 
 /**
@@ -21,6 +27,7 @@ public interface IEventService {
 
     @GET("/api/event/getdetail")
     void getEvent(@Query("eventId") int eventId,
+                  @Query("UserId") String userId,
                   Callback<GetEventDetailResponseModel> callback);
 
     @GET("/api/event/getcomponents")
@@ -31,4 +38,17 @@ public interface IEventService {
     void getComponentItem(@Query("typeId") int typeId,
                           Callback<GetComponentItemsResponseModel> callback);
 
+    @GET("/api/event/SearchByName")
+    void searchByName(@Query("Name") String name,
+                      @Query("Skip") int skip,
+                      @Query("Take") int take,
+                      Callback<GetEventsResponseModel> callback);
+
+    @POST("/api/event/rate")
+    void rateEvent(@Body RateEventRequestMode requestMode,
+                   Callback<RateEventResponseModel> callback);
+
+    @GET("/api/event/getorganizer")
+    void getOrganizer(@Query("eventId") int eventId,
+                      Callback<GetOrganizerResponseModel> callback);
 }

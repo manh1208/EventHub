@@ -7,6 +7,7 @@ import android.support.v4.app.FragmentPagerAdapter;
 
 import com.linhv.eventhub.fragment.ContentEventFragment;
 import com.linhv.eventhub.fragment.EventDetailComponentFragment;
+import com.linhv.eventhub.fragment.EventOrganizerFragment;
 import com.linhv.eventhub.fragment.TopEventFragment;
 import com.linhv.eventhub.model.EventComponent;
 
@@ -20,7 +21,7 @@ public class EventDetailTabAdapter extends FragmentPagerAdapter {
     private int eventId;
     private List<EventComponent> components;
 
-    public EventDetailTabAdapter(FragmentManager fragmentManager,int eventId) {
+    public EventDetailTabAdapter(FragmentManager fragmentManager, int eventId) {
         super(fragmentManager);
         components = new ArrayList<>();
         this.eventId = eventId;
@@ -32,13 +33,19 @@ public class EventDetailTabAdapter extends FragmentPagerAdapter {
             case 0:
                 ContentEventFragment eventFragment = new ContentEventFragment();
                 Bundle bundle = new Bundle();
-                bundle.putInt("eventId",eventId);
+                bundle.putInt("eventId", eventId);
                 eventFragment.setArguments(bundle);
                 return eventFragment;
+//            case 1:
+//                EventOrganizerFragment organizerFragment= new EventOrganizerFragment();
+//                bundle = new Bundle();
+//                bundle.putInt("eventId",eventId);
+//                organizerFragment.setArguments(bundle);
+//                return organizerFragment;
             default:
                 EventDetailComponentFragment fragment = new EventDetailComponentFragment();
                 bundle = new Bundle();
-                bundle.putInt("componentId",components.get(position-1).getId());
+                bundle.putInt("componentId", components.get(position - 1).getId());
                 fragment.setArguments(bundle);
                 return fragment;
         }
@@ -53,7 +60,10 @@ public class EventDetailTabAdapter extends FragmentPagerAdapter {
     public CharSequence getPageTitle(int position) {
         switch (position) {
             case 0:
+
                 return "Nội dung";
+//            case 1:
+//                return "Nhà tổ chức";
             default:
                 return components.get(position - 1).getName();
         }

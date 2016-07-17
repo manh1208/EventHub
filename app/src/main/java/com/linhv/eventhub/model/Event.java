@@ -1,6 +1,7 @@
 package com.linhv.eventhub.model;
 
 import com.google.gson.annotations.SerializedName;
+import com.linhv.eventhub.model.response_model.RateEventResponseModel;
 
 import java.sql.Date;
 import java.text.SimpleDateFormat;
@@ -50,6 +51,9 @@ public class Event {
 
     @SerializedName("IsFree")
     private boolean isFree;
+
+   @SerializedName("Rating")
+   private Rating rate;
 
     public Event(int id, String creatorUserID, String organizerId, String name, String imageUrl,
                  String description, String startDate, String endDate, String createdTime,
@@ -184,5 +188,13 @@ public class Event {
 
     public void setFree(boolean free) {
         isFree = free;
+    }
+
+    public Rating getRate() {
+        return rate;
+    }
+
+    public void setRate(Rating rate) {
+        this.rate = rate;
     }
 }

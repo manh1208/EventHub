@@ -124,33 +124,33 @@ public class MainActivity extends AppCompatActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
-        MenuItem searchItem = menu.findItem(R.id.menu_search);
-
-        SearchManager searchManager = (SearchManager) MainActivity.this.getSystemService(Context.SEARCH_SERVICE);
-        if (searchItem != null) {
-            searchView = (SearchView) searchItem.getActionView();
-        }
-        if (searchView != null) {
-            searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
-
-            queryTextListener = new SearchView.OnQueryTextListener() {
-                @Override
-                public boolean onQueryTextChange(String newText) {
-                    Log.i("onQueryTextChange", newText);
-
-                    return true;
-                }
-
-                @Override
-                public boolean onQueryTextSubmit(String query) {
-                    Log.i("onQueryTextSubmit", query);
-
-                    return true;
-                }
-            };
-            searchView.setOnQueryTextListener(queryTextListener);
-        }
+//        getMenuInflater().inflate(R.menu.main, menu);
+//        MenuItem searchItem = menu.findItem(R.id.menu_search);
+//
+//        SearchManager searchManager = (SearchManager) MainActivity.this.getSystemService(Context.SEARCH_SERVICE);
+//        if (searchItem != null) {
+//            searchView = (SearchView) searchItem.getActionView();
+//        }
+//        if (searchView != null) {
+//            searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+//
+//            queryTextListener = new SearchView.OnQueryTextListener() {
+//                @Override
+//                public boolean onQueryTextChange(String newText) {
+//                    Log.i("onQueryTextChange", newText);
+//
+//                    return true;
+//                }
+//
+//                @Override
+//                public boolean onQueryTextSubmit(String query) {
+//                    Log.i("onQueryTextSubmit", query);
+//
+//                    return true;
+//                }
+//            };
+//            searchView.setOnQueryTextListener(queryTextListener);
+//        }
         return true;
     }
 
@@ -159,21 +159,21 @@ public class MainActivity extends AppCompatActivity
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.menu_filter) {
-//            viewHolder.toolbar.setTitle("Tìm kiếm sự kiện");
-//            getSupportFragmentManager()
-//                    .beginTransaction()
-//                    .replace(R.id.frame_main, new SearchFragment())
-//                    .commit();
-            Intent intent = new Intent(MainActivity.this, SearchActivity.class);
-            startActivity(intent);
-            overridePendingTransition(R.anim.right_in, R.anim.left_out);
-            return true;
-        }
-        searchView.setOnQueryTextListener(queryTextListener);
+//        int id = item.getItemId();
+//
+//        //noinspection SimplifiableIfStatement
+//        if (id == R.id.menu_filter) {
+////            viewHolder.toolbar.setTitle("Tìm kiếm sự kiện");
+////            getSupportFragmentManager()
+////                    .beginTransaction()
+////                    .replace(R.id.frame_main, new SearchFragment())
+////                    .commit();
+//            Intent intent = new Intent(MainActivity.this, SearchActivity.class);
+//            startActivity(intent);
+//            overridePendingTransition(R.anim.right_in, R.anim.left_out);
+//            return true;
+//        }
+//        searchView.setOnQueryTextListener(queryTextListener);
         return super.onOptionsItemSelected(item);
     }
 

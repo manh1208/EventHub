@@ -8,9 +8,8 @@
     <android.support.v7.widget.RecyclerView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/lv_component_list"
-        tools:listitem="@layout/item_component_item"
-        android:paddingBottom="20sp"
+        android:id="@+id/lv_organizer"
+        tools:listitem="@layout/item_event_organizer"
         android:divider="#fff"
         android:dividerHeight="0sp">
     </android.support.v7.widget.RecyclerView>

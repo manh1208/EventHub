@@ -21,6 +21,7 @@ import com.linhv.eventhub.model.response_model.GetEventComponentResponseModel;
 import com.linhv.eventhub.model.response_model.GetEventDetailResponseModel;
 import com.linhv.eventhub.services.RestService;
 import com.linhv.eventhub.utils.DataUtils;
+import com.linhv.eventhub.utils.QuickSharePreferences;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
@@ -39,6 +40,7 @@ public class EventDetailActivity extends AppCompatActivity {
     private Toolbar toolbar;
     private String eventName;
     private String eventImage;
+    private String userId;
 
 
     @Override
@@ -47,6 +49,7 @@ public class EventDetailActivity extends AppCompatActivity {
         setContentView(R.layout.activity_detail_event);
          toolbar = (Toolbar) findViewById(R.id.toolbar);
         eventId = getIntent().getIntExtra("eventId",-1);
+        userId = DataUtils.getINSTANCE(this).getmPreferences().getString(QuickSharePreferences.SHARE_USERID,"");
          eventName = getIntent().getStringExtra("eventName");
         eventImage = getIntent().getStringExtra("eventImage");
         toolbar.setTitle(eventName);
@@ -65,7 +68,7 @@ public class EventDetailActivity extends AppCompatActivity {
     }
 
     private void getEventDetail() {
-        restService.getEventService().getEvent(eventId, new Callback<GetEventDetailResponseModel>() {
+        restService.getEventService().getEvent(eventId,userId, new Callback<GetEventDetailResponseModel>() {
             @Override
             public void success(GetEventDetailResponseModel responseModel, Response response) {
                 if (responseModel.isSucceed()){
@@ -90,7 +93,6 @@ public class EventDetailActivity extends AppCompatActivity {
 
         restService = new RestService();
         viewHolder = new ViewHolder();
-
         viewHolder.tabLayout = (TabLayout) findViewById(R.id.tabs_event_detail);
         viewHolder.viewPager = (ViewPager) findViewById(R.id.viewpager_event_detail);
         detailTabAdapter = new EventDetailTabAdapter(getSupportFragmentManager(),eventId);
@@ -105,8 +107,8 @@ public class EventDetailActivity extends AppCompatActivity {
         });
         viewHolder.image = (CustomImage) findViewById(R.id.iv_detail_event_cover);
         Picasso.with(this).load(Uri.parse(DataUtils.URL+eventImage))
-                .placeholder(R.drawable.image_cover_event)
-                .error(R.drawable.image_cover_event)
+                .placeholder(R.drawable.placeholder)
+                .error(R.drawable.placeholder)
                 .into(viewHolder.image);
         getComponent();
     }
