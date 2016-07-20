@@ -34,7 +34,7 @@ public class TopEventFragment extends Fragment {
         viewHolder = new ViewHolder();
         viewHolder.lvEvents = (ListView) v.findViewById(R.id.lv_top_event_list);
         mEvents = loadEvent();
-        EventAdapter eventAdapter = new EventAdapter(getActivity(),R.layout.item_list_event,mEvents);
+        EventAdapter eventAdapter = new EventAdapter(getActivity(),R.layout.item_list_event,mEvents,false);
         viewHolder.lvEvents.setAdapter(eventAdapter);
     }
 
