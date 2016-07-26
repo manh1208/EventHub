@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "80911170090",
+    "project_id": "valiant-house-134123"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:80911170090:android:7823f6b9fbc2b033",
+        "android_client_info": {
+          "package_name": "com.linhv.eventhub"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "80911170090-v28h2i8eo6fs3jfr43hboaik23qptu84.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.linhv.eventhub",
+            "certificate_hash": "724E2535679D5E8784BD73AF9C225ADA8E293A75"
+          }
+        },
+        {
+          "client_id": "80911170090-31e0rte8b4mb252t3knpu2uep6rmp5s2.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBjqlga7qIToSzHOoLN3TTviTWvKcrgW-Q"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 1
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

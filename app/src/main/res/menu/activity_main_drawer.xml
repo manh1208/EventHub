@@ -9,7 +9,7 @@
         <item
             android:id="@+id/nav_save"
             android:icon="@drawable/ic_save_nav"
-            android:title="Trang lưu" />
+            android:title="Sự kiện của tôi" />
 
     </group>
 

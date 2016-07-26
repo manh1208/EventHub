@@ -7,7 +7,7 @@ import java.util.List;
 /**
  * Created by ManhNV on 6/23/2016.
  */
-public class Response {
+public class Response{
     @SerializedName("Succeed")
     private boolean succeed;
     @SerializedName("Message")

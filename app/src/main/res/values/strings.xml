@@ -15,4 +15,6 @@
     <string name="title_activity_search">SearchActivity</string>
     <string name="search_hint">Tên sự kiện</string>
     <string name="title_activity_detail_event">DetailEventActivity</string>
+    <string name="sender_id">80911170090</string>
+    <string name="title_activity_participants">ParticipantsActivity</string>
 </resources>

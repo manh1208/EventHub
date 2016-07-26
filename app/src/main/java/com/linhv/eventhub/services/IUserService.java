@@ -9,10 +9,12 @@ import com.linhv.eventhub.model.response_model.FollowEventResponseModel;
 import com.linhv.eventhub.model.response_model.GetEventsResponseModel;
 import com.linhv.eventhub.model.response_model.LoginResponseModel;
 import com.linhv.eventhub.model.response_model.RegisterResponseModel;
+import com.linhv.eventhub.model.response_model.SendTokenResponseModel;
 
 import retrofit.Callback;
 import retrofit.http.Body;
 import retrofit.http.GET;
+import retrofit.http.Headers;
 import retrofit.http.POST;
 import retrofit.http.Query;
 
@@ -45,4 +47,9 @@ public interface IUserService {
                      @Query("take") int take,
                      @Query("skip") int skip,
                      Callback<GetEventsResponseModel> callback);
+
+    @POST("/api/account/RegisterTokenId?Platform=1")
+    void registerTokenId(@Query("UserId") String userId,
+                         @Query("Token") String token,
+                         Callback<SendTokenResponseModel> callback);
 }

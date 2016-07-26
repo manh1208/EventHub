@@ -1,10 +1,9 @@
 package com.linhv.eventhub.adapter;
 
 import android.content.Context;
-import android.graphics.drawable.Drawable;
+import android.content.Intent;
 import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
-import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,26 +12,24 @@ import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
-import com.facebook.share.model.ShareContent;
 import com.facebook.share.model.ShareLinkContent;
-import com.facebook.share.widget.LikeView;
 import com.facebook.share.widget.ShareButton;
-import com.facebook.share.widget.ShareDialog;
 import com.linhv.eventhub.R;
-import com.linhv.eventhub.custom.URLImageParser;
+import com.linhv.eventhub.activity.ParticipantsActivity;
 import com.linhv.eventhub.dialog.OrganizerDialog;
 import com.linhv.eventhub.model.Event;
+import com.linhv.eventhub.model.request_model.JoinEventFreeRequestModel;
 import com.linhv.eventhub.model.request_model.RateEventRequestMode;
+import com.linhv.eventhub.model.response_model.CheckEventOfUserResponseModel;
+import com.linhv.eventhub.model.response_model.JoinEventFreeResponseModel;
 import com.linhv.eventhub.model.response_model.RateEventResponseModel;
 import com.linhv.eventhub.services.RestService;
 import com.linhv.eventhub.utils.DataUtils;
 import com.linhv.eventhub.utils.QuickSharePreferences;
-
-import org.w3c.dom.Text;
 
 import retrofit.Callback;
 import retrofit.RetrofitError;
@@ -118,6 +115,66 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.ContentV
                     organizerDialog.setCanceledOnTouchOutside(true);
                 }
             });
+            if (DataUtils.getINSTANCE(mContext).getmPreferences().getBoolean(QuickSharePreferences.SHARE_IS_ORGANIZER,false)){
+                restService.getEventService().checkEventOfUser(userId, event.getId(), new Callback<CheckEventOfUserResponseModel>() {
+                    @Override
+                    public void success(CheckEventOfUserResponseModel responseModel, Response response) {
+                        if (responseModel.isSucceed()){
+                            if (responseModel.isBelong()){
+                                viewHolder.btnParticipant.setVisibility(View.VISIBLE);
+                                viewHolder.btnJoin.setVisibility(View.GONE);
+                            }else{
+                                viewHolder.btnParticipant.setVisibility(View.GONE);
+                                viewHolder.btnJoin.setVisibility(View.VISIBLE);
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void failure(RetrofitError error) {
+
+                    }
+                });
+
+            }else{
+                viewHolder.btnParticipant.setVisibility(View.GONE);
+                viewHolder.btnJoin.setVisibility(View.VISIBLE);
+            }
+            viewHolder.btnParticipant.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(mContext, ParticipantsActivity.class);
+                    mContext.startActivity(intent);
+                }
+            });
+
+            viewHolder.btnJoin.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (event.isFree()) {
+                        restService.getEventService().joinEventFree(new JoinEventFreeRequestModel(userId, event.getId()),
+                                new Callback<JoinEventFreeResponseModel>() {
+
+
+                                    @Override
+                                    public void success(JoinEventFreeResponseModel responseModel, Response response) {
+                                        if (responseModel.isSucceed()){
+                                            Toast.makeText(mContext, "Đăng ký thành công", Toast.LENGTH_SHORT).show();
+                                        }else{
+                                            Toast.makeText(mContext, "Đăng ký không thành công ", Toast.LENGTH_SHORT).show();
+                                        }
+                                    }
+
+                                    @Override
+                                    public void failure(RetrofitError error) {
+                                        DataUtils.getINSTANCE(mContext).ConnectionError();
+                                    }
+                                });
+                    }else{
+                        Toast.makeText(mContext, "Su kien nay k phai free", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
 //            viewHolder.btnLike.setObjectIdAndType(DataUtils.URL+"/event/"+event.getSeoName(), LikeView.ObjectType.DEFAULT);
 //            viewHolder.btnLike.setLikeViewStyle(LikeView.Style.STANDARD);
 //            viewHolder.btnLike.setHorizontalAlignment(LikeView.HorizontalAlignment.CENTER);
@@ -155,6 +212,8 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.ContentV
         private TextView txtNumOfRate;
         private ShareButton btnShare;
         private Button btnOrganizer;
+        private Button btnParticipant;
+        private Button btnJoin;
 //        private LikeView btnLike;
 
         public ContentViewHolder(View convertView) {
@@ -167,6 +226,8 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.ContentV
             txtNumOfRate = (TextView) convertView.findViewById(R.id.txt_num_of_rate);
             btnShare = (ShareButton) convertView.findViewById(R.id.btn_share_facebook);
             btnOrganizer = (Button) convertView.findViewById(R.id.btn_event_organizer);
+            btnParticipant= (Button) convertView.findViewById(R.id.btn_event_participant);
+            btnJoin = (Button) convertView.findViewById(R.id.btn_join_event_free);
 //            btnLike = (LikeView) convertView.findViewById(R.id.btn_like_facebook);
 //            ivImage = (ImageView) convertView.findViewById(R.id.iv_item_image);
 //            txtName = (TextView) convertView.findViewById(R.id.txt_item_name);

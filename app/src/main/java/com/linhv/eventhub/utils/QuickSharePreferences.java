@@ -6,4 +6,5 @@ package com.linhv.eventhub.utils;
 public class QuickSharePreferences {
     public static final String FONT_LIGHT = "fonts/event_name.ttf";
     public static final String SHARE_USERID="Share_UserId";
+    public static final String SHARE_IS_ORGANIZER= "IsOrganizer";
 }

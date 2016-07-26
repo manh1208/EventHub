@@ -3,6 +3,7 @@ package com.linhv.eventhub.activity;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
@@ -72,6 +73,7 @@ public class MainActivity extends AppCompatActivity
 
         viewHolder.nvMenu = (NavigationView) findViewById(R.id.nav_view);
         viewHolder.nvMenu.setNavigationItemSelectedListener(this);
+        boolean isOrganizer = DataUtils.getINSTANCE(this).getmPreferences().getBoolean(QuickSharePreferences.SHARE_IS_ORGANIZER,false);
 
         getSupportFragmentManager()
                 .beginTransaction()
@@ -88,9 +90,22 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void success(LoginResponseModel responseModel, Response response) {
                 if (responseModel.isSucceed()) {
+                    SharedPreferences.Editor editor = DataUtils.getINSTANCE(getApplicationContext()).getmPreferences().edit();
+                    boolean isOrganizer = responseModel.getUser().getRole().trim().toUpperCase().equalsIgnoreCase("Organizer".trim().toUpperCase());
+                    editor.putBoolean(QuickSharePreferences.SHARE_IS_ORGANIZER,isOrganizer);
+                    editor.commit();
                     viewHolder.tvFullname.setText(responseModel.getUser().getFullName());
                     viewHolder.tvEmail.setText(responseModel.getUser().getEmail());
-                    Picasso.with(MainActivity.this).load(Uri.parse(DataUtils.URL+responseModel.getUser().getImageUrl()))
+                    String url = responseModel.getUser().getImageUrl();
+                    if (url!=null){
+                        if (!url.contains("http")) {
+                            url = DataUtils.URL + url;
+                        }
+                    }else{
+                        url = "";
+                    }
+
+                    Picasso.with(MainActivity.this).load(Uri.parse(url))
                             .placeholder(R.drawable.image_default_avatar)
                             .error(R.drawable.image_default_avatar)
                             .into(viewHolder.ivAvatar);
@@ -123,57 +138,11 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-//        getMenuInflater().inflate(R.menu.main, menu);
-//        MenuItem searchItem = menu.findItem(R.id.menu_search);
-//
-//        SearchManager searchManager = (SearchManager) MainActivity.this.getSystemService(Context.SEARCH_SERVICE);
-//        if (searchItem != null) {
-//            searchView = (SearchView) searchItem.getActionView();
-//        }
-//        if (searchView != null) {
-//            searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
-//
-//            queryTextListener = new SearchView.OnQueryTextListener() {
-//                @Override
-//                public boolean onQueryTextChange(String newText) {
-//                    Log.i("onQueryTextChange", newText);
-//
-//                    return true;
-//                }
-//
-//                @Override
-//                public boolean onQueryTextSubmit(String query) {
-//                    Log.i("onQueryTextSubmit", query);
-//
-//                    return true;
-//                }
-//            };
-//            searchView.setOnQueryTextListener(queryTextListener);
-//        }
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-//        int id = item.getItemId();
-//
-//        //noinspection SimplifiableIfStatement
-//        if (id == R.id.menu_filter) {
-////            viewHolder.toolbar.setTitle("Tìm kiếm sự kiện");
-////            getSupportFragmentManager()
-////                    .beginTransaction()
-////                    .replace(R.id.frame_main, new SearchFragment())
-////                    .commit();
-//            Intent intent = new Intent(MainActivity.this, SearchActivity.class);
-//            startActivity(intent);
-//            overridePendingTransition(R.anim.right_in, R.anim.left_out);
-//            return true;
-//        }
-//        searchView.setOnQueryTextListener(queryTextListener);
         return super.onOptionsItemSelected(item);
     }
 
@@ -194,7 +163,7 @@ public class MainActivity extends AppCompatActivity
                 fragment = new HomeFragment();
                 break;
             case R.id.nav_save:
-                viewHolder.toolbar.setTitle("Sự kiện đã lưu");
+                viewHolder.toolbar.setTitle("Sự kiện của tôi");
                 fragment = new EventStoragedFragment();
                 break;
             case R.id.nav_logout:

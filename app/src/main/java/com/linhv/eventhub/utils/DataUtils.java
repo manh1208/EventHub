@@ -13,6 +13,8 @@ import android.widget.Toast;
 
 //import com.google.android.gms.common.api.GoogleApiClient;
 
+import com.google.android.gms.common.api.GoogleApiClient;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -30,10 +32,11 @@ import java.util.concurrent.TimeUnit;
  */
 public class DataUtils {
     public static String URL = "http://202.78.227.93:6996";
-//public static String URL = "http://192.168.150.48:19291";
+//public static String URL = "http://192.168.150.32:19291";
 
 
     private static DataUtils INSTANCE = null;
+    public static GoogleApiClient mGoogleApiClient;
     private SharedPreferences mPreferences;
     private Context mContext;
 

@@ -1,13 +1,15 @@
 package com.linhv.eventhub.services;
 
+import com.linhv.eventhub.model.request_model.JoinEventFreeRequestModel;
 import com.linhv.eventhub.model.request_model.RateEventRequestMode;
+import com.linhv.eventhub.model.response_model.CheckEventOfUserResponseModel;
 import com.linhv.eventhub.model.response_model.GetComponentItemsResponseModel;
 import com.linhv.eventhub.model.response_model.GetEventComponentResponseModel;
 import com.linhv.eventhub.model.response_model.GetEventDetailResponseModel;
 import com.linhv.eventhub.model.response_model.GetEventsResponseModel;
 import com.linhv.eventhub.model.response_model.GetOrganizerResponseModel;
+import com.linhv.eventhub.model.response_model.JoinEventFreeResponseModel;
 import com.linhv.eventhub.model.response_model.RateEventResponseModel;
-import com.linhv.eventhub.model.response_model.Response;
 
 import retrofit.Callback;
 import retrofit.http.Body;
@@ -22,6 +24,10 @@ public interface IEventService {
 
     @GET("/api/event/getevents")
     void getEvents(@Query("take") int take,
+                   @Query("skip") int skip,
+                   Callback<GetEventsResponseModel> callback);
+    @GET("/api/event/gethotevents")
+    void getHotEvents(@Query("take") int take,
                    @Query("skip") int skip,
                    Callback<GetEventsResponseModel> callback);
 
@@ -51,4 +57,17 @@ public interface IEventService {
     @GET("/api/event/getorganizer")
     void getOrganizer(@Query("eventId") int eventId,
                       Callback<GetOrganizerResponseModel> callback);
+
+    @GET("/api/account/GetOrganizerInfo")
+    void getOrganiner(@Query("userId")String userId,
+                      Callback<GetOrganizerResponseModel> callback);
+
+    @GET("/api/event/CheckEventOfUser")
+    void checkEventOfUser(@Query("UserId")String userId,
+                          @Query("EventId")int eventId,
+                          Callback<CheckEventOfUserResponseModel> callback);
+
+    @POST("/api/event/ParticipateFree")
+    void joinEventFree(@Body JoinEventFreeRequestModel requestModel,
+                       Callback<JoinEventFreeResponseModel> callback);
 }

@@ -26,7 +26,10 @@ public class User {
     private String createdTime;
 
     @SerializedName("ImageUrl")
-    private String ImageUrl;
+    private String imageUrl;
+
+    @SerializedName("Role")
+    private String role;
 
     public User(){
 
@@ -85,11 +88,11 @@ public class User {
     }
 
     public String getImageUrl() {
-        return ImageUrl;
+        return imageUrl;
     }
 
     public void setImageUrl(String imageUrl) {
-        ImageUrl = imageUrl;
+        this.imageUrl = imageUrl;
     }
 
     public String getPassword() {
@@ -98,5 +101,13 @@ public class User {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
     }
 }

@@ -1,14 +1,19 @@
 package com.linhv.eventhub.activity;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
@@ -25,6 +30,16 @@ import com.facebook.ProfileTracker;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
+import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.auth.api.signin.GoogleSignInResult;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.android.gms.common.SignInButton;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.linhv.eventhub.GCM.QuickstartPreferences;
+import com.linhv.eventhub.GCM.RegistrationIntentService;
 import com.linhv.eventhub.R;
 import com.linhv.eventhub.model.User;
 import com.linhv.eventhub.model.request_model.ExternalLoginRequestModel;
@@ -45,26 +60,24 @@ import retrofit.RetrofitError;
 import retrofit.client.Response;
 
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
+    private static final int RC_SIGN_IN = 1994;
+    private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 1995;
     ViewHolder viewHolder;
     private CallbackManager callbackManager;
     private User user;
     private RestService restService;
     private Context mContext;
     private ProgressDialog progressDialog;
+    private GoogleApiClient mGoogleApiClient;
+    private BroadcastReceiver mRegistrationBroadcastReceiver;
+    private boolean isReceiverRegistered;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        mContext = this;
-        restService = new RestService();
-        viewHolder = new ViewHolder();
-        progressDialog = new ProgressDialog(mContext);
-        progressDialog.setCanceledOnTouchOutside(false);
-        viewHolder.txtUsername = (EditText) findViewById(R.id.txt_login_username_email);
-        viewHolder.txtPassword = (EditText) findViewById(R.id.txt_login_password);
-        viewHolder.btnLogin = (ImageButton) findViewById(R.id.btn_login_next);
-        viewHolder.txtRegister = (TextView) findViewById(R.id.lb_login_register);
+        unit();
+
         viewHolder.btnLogin.setOnClickListener(this);
         viewHolder.txtRegister.setOnClickListener(this);
         FacebookSdk.sdkInitialize(getApplicationContext());
@@ -112,8 +125,33 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 Toast.makeText(LoginActivity.this, "Đăng nhập không thành công: " + error.toString(), Toast.LENGTH_LONG).show();
             }
         });
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestEmail()
+//                .requestScopes(Plus.SCOPE_PLUS_PROFILE)
+                .build();
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+//                .enableAutoManage(this /* FragmentActivity */, this /* OnConnectionFailedListener */)
+                .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
+                .build();
 
 
+
+
+
+    }
+
+    private void unit() {
+        mContext = this;
+        restService = new RestService();
+        viewHolder = new ViewHolder();
+        progressDialog = new ProgressDialog(mContext);
+        progressDialog.setCanceledOnTouchOutside(false);
+        viewHolder.txtUsername = (EditText) findViewById(R.id.txt_login_username_email);
+        viewHolder.txtPassword = (EditText) findViewById(R.id.txt_login_password);
+        viewHolder.btnLogin = (ImageButton) findViewById(R.id.btn_login_next);
+        viewHolder.txtRegister = (TextView) findViewById(R.id.lb_login_register);
+        viewHolder.btnLoginWithgoogle = (Button) findViewById(R.id.btn_login_with_google);
+        viewHolder.btnLoginWithgoogle.setOnClickListener(this);
     }
 
     private void login() {
@@ -157,18 +195,25 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 if (responseModel.isSucceed()) {
                     SharedPreferences.Editor editor = DataUtils.getINSTANCE(getApplicationContext()).getmPreferences().edit();
                     editor.putString(QuickSharePreferences.SHARE_USERID, responseModel.getUser().getId());
+
+//                    boolean isOrganizer = responseModel.getUser().getRole().trim().toUpperCase().equalsIgnoreCase("Organizer".trim().toUpperCase());
+//                    editor.putBoolean(QuickSharePreferences.SHARE_IS_ORGANIZER,isOrganizer);
                     editor.commit();
 //                    SharedPreferences sharedPreferences =
 //                            PreferenceManager.getDefaultSharedPreferences(mContext);
 //                    // Start IntentService to register this application with GCM.
 //                    sharedPreferences.edit().putString(QuickstartPreferences.USER_ID, externalLoginResponseModel.getUser().getUserId()).apply();
-//                    regisGCM();
+                    SharedPreferences sharedPreferences =
+                            PreferenceManager.getDefaultSharedPreferences(mContext);
+                    // Start IntentService to register this application with GCM.
+                    sharedPreferences.edit().putString(QuickstartPreferences.USER_ID, responseModel.getUser().getId()).apply();
+                    regisGCM();
                     login();
                 } else {
 //                    viewHolder.btnLoginWithFacebook;
                     LoginManager.getInstance().logOut();
-                    Log.d("Login Activity", responseModel.getErrors().get(0));
-                    Toast.makeText(LoginActivity.this, responseModel.getErrors().get(0), Toast.LENGTH_SHORT).show();
+                    Log.d("Login Activity", responseModel.getErrors().get(0).toString());
+                    Toast.makeText(LoginActivity.this, responseModel.getErrors().get(0).toString(), Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -186,7 +231,16 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        callbackManager.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == RC_SIGN_IN && resultCode == Activity.RESULT_OK) {
+            progressDialog.show();
+            progressDialog.setMessage("Waiting for login");
+            GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
+            handleSignInGoogleResult(result);
+
+        } else {
+            callbackManager.onActivityResult(requestCode, resultCode, data);
+        }
     }
 
     @Override
@@ -216,7 +270,15 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                             if (responseModel.isSucceed()) {
                                 SharedPreferences.Editor editor = DataUtils.getINSTANCE(getApplicationContext()).getmPreferences().edit();
                                 editor.putString(QuickSharePreferences.SHARE_USERID, responseModel.getUser().getId());
+//                                boolean isOrganizer = responseModel.getUser().getRole().trim().toUpperCase().equalsIgnoreCase("Organizer".trim().toUpperCase());
+//                                editor.putBoolean(QuickSharePreferences.SHARE_IS_ORGANIZER,isOrganizer);
                                 editor.commit();
+
+                                SharedPreferences sharedPreferences =
+                                        PreferenceManager.getDefaultSharedPreferences(mContext);
+                                // Start IntentService to register this application with GCM.
+                                sharedPreferences.edit().putString(QuickstartPreferences.USER_ID, responseModel.getUser().getId()).apply();
+                                regisGCM();
                                 login();
                             } else {
                                 viewHolder.txtUsername.setError(responseModel.getMessage());
@@ -237,7 +299,102 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 startActivity(intent);
                 overridePendingTransition(R.anim.right_in, R.anim.left_out);
                 break;
+
+            case R.id.btn_login_with_google:
+                viewHolder.btnLoginWithgoogle.setEnabled(false);
+                loginWithGoogle();
+                break;
         }
+    }
+
+    private void loginWithGoogle() {
+        DataUtils.mGoogleApiClient = mGoogleApiClient;
+        Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
+        startActivityForResult(signInIntent, RC_SIGN_IN);
+    }
+
+    private void handleSignInGoogleResult(GoogleSignInResult result) {
+//        Log.d(TAG, "handleSignInResult:" + result.isSuccess());
+        if (result.isSuccess()) {
+            GoogleSignInAccount acc = result.getSignInAccount();
+            user = new User();
+            user.setFullName(acc.getDisplayName());
+            user.setEmail(acc.getEmail());
+            user.setImageUrl(acc.getPhotoUrl() != null ? acc.getPhotoUrl().toString() : "");
+            sendLoginToServer();
+
+//            Toast.makeText(LoginActivity.this, "You were login with google at "+acct.getDisplayName(), Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(LoginActivity.this, "Fail to login with google. Please check your connection and try again.", Toast.LENGTH_SHORT).show();
+        }
+        viewHolder.btnLoginWithgoogle.setEnabled(true);
+    }
+
+    private void regisGCM() {
+        mRegistrationBroadcastReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+
+                SharedPreferences sharedPreferences =
+                        PreferenceManager.getDefaultSharedPreferences(context);
+                boolean sentToken = sharedPreferences
+                        .getBoolean(QuickstartPreferences.SENT_TOKEN_TO_SERVER, false);
+                if (sentToken) {
+//                    loadUserProfile();
+                } else {
+                    progressDialog.dismiss();
+                    Toast.makeText(LoginActivity.this, "Something wrong. Please check your network and try again!", Toast.LENGTH_SHORT).show();
+                }
+            }
+        };
+        registerReceiver();
+
+        if (checkPlayServices()) {
+
+            Intent intent = new Intent(this, RegistrationIntentService.class);
+            startService(intent);
+        } else {
+            progressDialog.dismiss();
+            Toast.makeText(LoginActivity.this, "Application need google play service!. Please install google play services and try agains", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+
+    private boolean checkPlayServices() {
+        GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
+        int resultCode = apiAvailability.isGooglePlayServicesAvailable(this);
+        if (resultCode != ConnectionResult.SUCCESS) {
+            if (apiAvailability.isUserResolvableError(resultCode)) {
+                apiAvailability.getErrorDialog(this, resultCode, PLAY_SERVICES_RESOLUTION_REQUEST)
+                        .show();
+            } else {
+                Log.i("LoginActivity", "This device is not supported.");
+                finish();
+            }
+            return false;
+        }
+        return true;
+    }
+
+    private void registerReceiver() {
+        if (!isReceiverRegistered) {
+            LocalBroadcastManager.getInstance(this).registerReceiver(mRegistrationBroadcastReceiver,
+                    new IntentFilter(QuickstartPreferences.REGISTRATION_COMPLETE));
+            isReceiverRegistered = true;
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+//        registerReceiver();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mRegistrationBroadcastReceiver);
+        isReceiverRegistered = false;
     }
 
     private final class ViewHolder {
@@ -246,5 +403,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         ImageButton btnLogin;
         TextView txtRegister;
         LoginButton btnLoginWithFacebook;
+        Button btnLoginWithgoogle;
     }
 }
