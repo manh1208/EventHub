@@ -21,7 +21,9 @@ import com.facebook.share.widget.ShareButton;
 import com.linhv.eventhub.R;
 import com.linhv.eventhub.activity.ParticipantsActivity;
 import com.linhv.eventhub.dialog.OrganizerDialog;
+import com.linhv.eventhub.dialog.TicketDialog;
 import com.linhv.eventhub.model.Event;
+import com.linhv.eventhub.model.UserParticipation;
 import com.linhv.eventhub.model.request_model.JoinEventFreeRequestModel;
 import com.linhv.eventhub.model.request_model.RateEventRequestMode;
 import com.linhv.eventhub.model.response_model.CheckEventOfUserResponseModel;
@@ -38,7 +40,7 @@ import retrofit.client.Response;
 /**
  * Created by ManhNV on 7/15/2016.
  */
-public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.ContentViewHolder> {
+public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.ContentViewHolder>  implements View.OnClickListener{
     private Context mContext;
     private Event event;
     private RestService restService;
@@ -140,6 +142,29 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.ContentV
                 viewHolder.btnParticipant.setVisibility(View.GONE);
                 viewHolder.btnJoin.setVisibility(View.VISIBLE);
             }
+            viewHolder.btnJoin.setEnabled(false);
+            viewHolder.btnJoin.setOnClickListener(ContentAdapter.this);
+            restService.getEventService().getUserParticipation(userId, event.getId(), new Callback<JoinEventFreeResponseModel>() {
+                @Override
+                public void success(JoinEventFreeResponseModel responseModel, Response response) {
+                    if (responseModel.isSucceed()){
+                        viewHolder.btnJoin.setEnabled(true);
+                        viewHolder.btnJoin.setTag(responseModel.getUserParticipation());
+                        if (responseModel.getUserParticipation()!=null){
+                            viewHolder.btnJoin.setText("Xem vé");
+                        }else{
+                            viewHolder.btnJoin.setText("Đăng ký");
+                        }
+                    }
+                }
+
+                @Override
+                public void failure(RetrofitError error) {
+                    DataUtils.getINSTANCE(mContext).ConnectionError();
+                }
+            });
+
+
             viewHolder.btnParticipant.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -148,9 +173,25 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.ContentV
                 }
             });
 
-            viewHolder.btnJoin.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
+
+        }
+
+
+    }
+
+
+    @Override
+    public int getItemCount() {
+        return 1;
+    }
+
+    @Override
+    public void onClick(View v) {
+        int id = v.getId();
+        switch (id){
+            case R.id.btn_join_event_free:
+                final Button btn = (Button) v;
+                if (btn.getText().toString().trim().toUpperCase().equals("Đăng ký".trim().toUpperCase())){
                     if (event.isFree()) {
                         restService.getEventService().joinEventFree(new JoinEventFreeRequestModel(userId, event.getId()),
                                 new Callback<JoinEventFreeResponseModel>() {
@@ -160,6 +201,8 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.ContentV
                                     public void success(JoinEventFreeResponseModel responseModel, Response response) {
                                         if (responseModel.isSucceed()){
                                             Toast.makeText(mContext, "Đăng ký thành công", Toast.LENGTH_SHORT).show();
+                                            btn.setText("Xem vé");
+                                            btn.setTag(responseModel.getUserParticipation());
                                         }else{
                                             Toast.makeText(mContext, "Đăng ký không thành công ", Toast.LENGTH_SHORT).show();
                                         }
@@ -171,35 +214,18 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.ContentV
                                     }
                                 });
                     }else{
+
                         Toast.makeText(mContext, "Su kien nay k phai free", Toast.LENGTH_SHORT).show();
                     }
+                }else{
+                    UserParticipation userParticipation = (UserParticipation) btn.getTag();
+                    TicketDialog ticketDialog = new TicketDialog(mContext,userParticipation);
+                    ticketDialog.setTitle("Vé của bạn");
+                    ticketDialog.show();
+
                 }
-            });
-//            viewHolder.btnLike.setObjectIdAndType(DataUtils.URL+"/event/"+event.getSeoName(), LikeView.ObjectType.DEFAULT);
-//            viewHolder.btnLike.setLikeViewStyle(LikeView.Style.STANDARD);
-//            viewHolder.btnLike.setHorizontalAlignment(LikeView.HorizontalAlignment.CENTER);
+                break;
         }
-//        if (componentItem.getUrl() != null && componentItem.getUrl().length() > 0) {
-//            String url = DataUtils.URL+componentItem.getUrl();
-//            Picasso.with(mContext).load(Uri.parse(url))
-//                    .placeholder(R.drawable.image_default_avatar)
-//                    .error(R.drawable.image_default_avatar)
-//                    .into(viewHolder.ivImage);
-//            viewHolder.ivImage.setVisibility(View.VISIBLE);
-//        } else {
-//            viewHolder.ivImage.setVisibility(View.GONE);
-//        }
-//
-//        viewHolder.txtName.setText(componentItem.getName());
-//        viewHolder.txtDesc.setText(componentItem.getDescription());
-//        viewHolder.txtDetail.setText(componentItem.getDetail());
-
-    }
-
-
-    @Override
-    public int getItemCount() {
-        return 1;
     }
 
     public class ContentViewHolder extends RecyclerView.ViewHolder {
@@ -214,7 +240,6 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.ContentV
         private Button btnOrganizer;
         private Button btnParticipant;
         private Button btnJoin;
-//        private LikeView btnLike;
 
         public ContentViewHolder(View convertView) {
             super(convertView);
@@ -228,11 +253,6 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.ContentV
             btnOrganizer = (Button) convertView.findViewById(R.id.btn_event_organizer);
             btnParticipant= (Button) convertView.findViewById(R.id.btn_event_participant);
             btnJoin = (Button) convertView.findViewById(R.id.btn_join_event_free);
-//            btnLike = (LikeView) convertView.findViewById(R.id.btn_like_facebook);
-//            ivImage = (ImageView) convertView.findViewById(R.id.iv_item_image);
-//            txtName = (TextView) convertView.findViewById(R.id.txt_item_name);
-//            txtDesc = (TextView) convertView.findViewById(R.id.txt_item_description);
-//            txtDetail = (TextView) convertView.findViewById(R.id.txt_item_detail);
         }
 
     }

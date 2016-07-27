@@ -70,4 +70,13 @@ public interface IEventService {
     @POST("/api/event/ParticipateFree")
     void joinEventFree(@Body JoinEventFreeRequestModel requestModel,
                        Callback<JoinEventFreeResponseModel> callback);
+
+    @GET("/api/event/GetUserParticipation")
+    void getUserParticipation(@Query("UserId")String userId,
+                              @Query("EventId")int eventId,
+                              Callback<JoinEventFreeResponseModel> callback);
+
+    @GET("/api/event/GetEventOfOrganizer")
+    void getEventOfOrganizer(@Query("UserId")String userId,
+                             Callback<GetEventsResponseModel> callback);
 }

@@ -57,6 +57,7 @@ public class EventStoragedFragment extends Fragment implements MenuItemCompat.On
     private SearchView.OnQueryTextListener queryTextListener;
     private SearchView searchView;
     private String userId;
+    private boolean isOrganizer;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -120,6 +121,7 @@ public class EventStoragedFragment extends Fragment implements MenuItemCompat.On
     private void initView(View v) {
         mContext = getActivity();
         userId = DataUtils.getINSTANCE(mContext).getmPreferences().getString(QuickSharePreferences.SHARE_USERID, "");
+        isOrganizer = DataUtils.getINSTANCE(mContext).getmPreferences().getBoolean(QuickSharePreferences.SHARE_IS_ORGANIZER,false);
         viewHolder = new ViewHolder();
         restService = new RestService();
         mEvents = new ArrayList<>();
@@ -157,40 +159,74 @@ public class EventStoragedFragment extends Fragment implements MenuItemCompat.On
 
     private void loadData() {
         flag_loading = true;
-        restService.getUserService().getFollowEvent(userId, take, skip, new Callback<GetEventsResponseModel>() {
-            @Override
-            public void success(GetEventsResponseModel responseModel, Response response) {
-                if (viewHolder.layoutRefresh.isRefreshing()) {
-                    viewHolder.layoutRefresh.setRefreshing(false);
-                }
-                flag_loading = false;
-                if (responseModel.isSucceed()) {
-                    if (responseModel.getEvents() != null && responseModel.getEvents().size() > 0) {
-                        for (Event item : responseModel.getEvents()) {
-                            mEvents.add(item);
-                        }
-                        eventAdapter.setEventList(mEvents);
-                        if (mEvents.size() < (skip + take)) {
+        if (!isOrganizer) {
+            restService.getUserService().getFollowEvent(userId, take, skip, new Callback<GetEventsResponseModel>() {
+                @Override
+                public void success(GetEventsResponseModel responseModel, Response response) {
+                    if (viewHolder.layoutRefresh.isRefreshing()) {
+                        viewHolder.layoutRefresh.setRefreshing(false);
+                    }
+                    flag_loading = false;
+                    if (responseModel.isSucceed()) {
+                        if (responseModel.getEvents() != null && responseModel.getEvents().size() > 0) {
+                            for (Event item : responseModel.getEvents()) {
+                                mEvents.add(item);
+                            }
+                            eventAdapter.setEventList(mEvents);
+                            if (mEvents.size() < (skip + take)) {
+                                isFull = true;
+                                removeFooter();
+                            }
+
+                            skip = skip + take;
+                        } else {
                             isFull = true;
                             removeFooter();
                         }
-
-                        skip = skip + take;
                     } else {
-                        isFull = true;
                         removeFooter();
+                        Log.i(TAG, responseModel.getErrorsString());
                     }
-                } else {
-                    removeFooter();
-                    Log.i(TAG, responseModel.getErrorsString());
                 }
-            }
 
-            @Override
-            public void failure(RetrofitError error) {
+                @Override
+                public void failure(RetrofitError error) {
 
-            }
-        });
+                }
+            });
+        }else{
+            restService.getEventService().getEventOfOrganizer(userId, new Callback<GetEventsResponseModel>() {
+                @Override
+                public void success(GetEventsResponseModel responseModel, Response response) {
+                    if (viewHolder.layoutRefresh.isRefreshing()) {
+                        viewHolder.layoutRefresh.setRefreshing(false);
+                    }
+                    flag_loading = false;
+                    if (responseModel.isSucceed()) {
+                        if (responseModel.getEvents() != null && responseModel.getEvents().size() > 0) {
+                            for (Event item : responseModel.getEvents()) {
+                                mEvents.add(item);
+                            }
+                            eventAdapter.setEventList(mEvents);
+                                isFull = true;
+                                removeFooter();
+                            skip = skip + take;
+                        } else {
+                            isFull = true;
+                            removeFooter();
+                        }
+                    } else {
+                        removeFooter();
+                        Log.i(TAG, responseModel.getErrorsString());
+                    }
+                }
+
+                @Override
+                public void failure(RetrofitError error) {
+
+                }
+            });
+        }
 
     }
 
