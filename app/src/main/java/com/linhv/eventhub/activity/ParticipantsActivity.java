@@ -30,7 +30,18 @@ public class ParticipantsActivity extends AppCompatActivity  implements ZXingSca
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_participants);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar.setTitle("Người tham gia");
         setSupportActionBar(toolbar);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
+
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         checkPermissionCamera();
         init();
 
@@ -96,5 +107,11 @@ public class ParticipantsActivity extends AppCompatActivity  implements ZXingSca
         TabLayout tabLayout;
         ViewPager viewPager;
         FloatingActionButton fab;
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        overridePendingTransition(R.anim.left_in, R.anim.right_out);
     }
 }

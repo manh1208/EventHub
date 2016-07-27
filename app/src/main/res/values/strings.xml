@@ -17,4 +17,5 @@
     <string name="title_activity_detail_event">DetailEventActivity</string>
     <string name="sender_id">80911170090</string>
     <string name="title_activity_participants">ParticipantsActivity</string>
+    <string name="title_activity_buy_ticket">BuyTicketActivity</string>
 </resources>

@@ -8,6 +8,7 @@ import com.linhv.eventhub.model.response_model.GetEventComponentResponseModel;
 import com.linhv.eventhub.model.response_model.GetEventDetailResponseModel;
 import com.linhv.eventhub.model.response_model.GetEventsResponseModel;
 import com.linhv.eventhub.model.response_model.GetOrganizerResponseModel;
+import com.linhv.eventhub.model.response_model.GetTicketsResponseModel;
 import com.linhv.eventhub.model.response_model.JoinEventFreeResponseModel;
 import com.linhv.eventhub.model.response_model.RateEventResponseModel;
 
@@ -79,4 +80,9 @@ public interface IEventService {
     @GET("/api/event/GetEventOfOrganizer")
     void getEventOfOrganizer(@Query("UserId")String userId,
                              Callback<GetEventsResponseModel> callback);
+
+    @GET("/api/event/GetTickets")
+    void getTickets(@Query("UserId")String userId,
+                    @Query("EventId")int eventId,
+                    Callback<GetTicketsResponseModel> callback);
 }

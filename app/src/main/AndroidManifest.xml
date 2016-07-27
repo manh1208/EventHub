@@ -3,8 +3,10 @@
     package="com.linhv.eventhub">
 
     <uses-permission android:name="android.permission.INTERNET" />
+
     <uses-feature android:name="android.hardware.camera" />
-    <uses-permission android:name="android.permission.CAMERA"/>
+
+    <uses-permission android:name="android.permission.CAMERA" />
 
     <application
         android:name=".application.MainApplication"
@@ -106,11 +108,15 @@
         <!-- [END instanceId_listener] -->
         <service
             android:name=".GCM.RegistrationIntentService"
-            android:exported="false"></service>
+            android:exported="false" />
 
         <activity
             android:name=".activity.ParticipantsActivity"
             android:label="@string/title_activity_participants"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".activity.BuyTicketActivity"
+            android:label="@string/title_activity_buy_ticket"
             android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 

@@ -1,8 +1,10 @@
 package com.linhv.eventhub.adapter;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,19 +21,26 @@ import android.widget.Toast;
 import com.facebook.share.model.ShareLinkContent;
 import com.facebook.share.widget.ShareButton;
 import com.linhv.eventhub.R;
+import com.linhv.eventhub.activity.BuyTicketActivity;
+import com.linhv.eventhub.activity.EventDetailActivity;
 import com.linhv.eventhub.activity.ParticipantsActivity;
 import com.linhv.eventhub.dialog.OrganizerDialog;
 import com.linhv.eventhub.dialog.TicketDialog;
 import com.linhv.eventhub.model.Event;
+import com.linhv.eventhub.model.Ticket;
 import com.linhv.eventhub.model.UserParticipation;
 import com.linhv.eventhub.model.request_model.JoinEventFreeRequestModel;
 import com.linhv.eventhub.model.request_model.RateEventRequestMode;
 import com.linhv.eventhub.model.response_model.CheckEventOfUserResponseModel;
+import com.linhv.eventhub.model.response_model.GetTicketsResponseModel;
 import com.linhv.eventhub.model.response_model.JoinEventFreeResponseModel;
 import com.linhv.eventhub.model.response_model.RateEventResponseModel;
 import com.linhv.eventhub.services.RestService;
 import com.linhv.eventhub.utils.DataUtils;
 import com.linhv.eventhub.utils.QuickSharePreferences;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import retrofit.Callback;
 import retrofit.RetrofitError;
@@ -153,7 +162,11 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.ContentV
                         if (responseModel.getUserParticipation()!=null){
                             viewHolder.btnJoin.setText("Xem vé");
                         }else{
-                            viewHolder.btnJoin.setText("Đăng ký");
+                            if (event.isFree()) {
+                                viewHolder.btnJoin.setText("Đăng ký");
+                            }else{
+                                viewHolder.btnJoin.setText("Mua vé");
+                            }
                         }
                     }
                 }
@@ -170,6 +183,7 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.ContentV
                 public void onClick(View v) {
                     Intent intent = new Intent(mContext, ParticipantsActivity.class);
                     mContext.startActivity(intent);
+                    
                 }
             });
 
@@ -191,7 +205,7 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.ContentV
         switch (id){
             case R.id.btn_join_event_free:
                 final Button btn = (Button) v;
-                if (btn.getText().toString().trim().toUpperCase().equals("Đăng ký".trim().toUpperCase())){
+                if (!btn.getText().toString().trim().toUpperCase().equals("Xem vé".trim().toUpperCase())){
                     if (event.isFree()) {
                         restService.getEventService().joinEventFree(new JoinEventFreeRequestModel(userId, event.getId()),
                                 new Callback<JoinEventFreeResponseModel>() {
@@ -215,7 +229,7 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.ContentV
                                 });
                     }else{
 
-                        Toast.makeText(mContext, "Su kien nay k phai free", Toast.LENGTH_SHORT).show();
+                        createDialog();
                     }
                 }else{
                     UserParticipation userParticipation = (UserParticipation) btn.getTag();
@@ -226,6 +240,42 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.ContentV
                 }
                 break;
         }
+    }
+
+    private void createDialog() {
+            restService.getEventService().getTickets(userId, event.getId(), new Callback<GetTicketsResponseModel>() {
+                @Override
+                public void success( GetTicketsResponseModel responseModel, Response response) {
+                    if (responseModel.isSucceed()){
+                        final List<Ticket> tickets = responseModel.getTickets();
+                        ArrayList<String> ticketName = new ArrayList<String>();
+                        for (Ticket item: responseModel.getTickets()
+                             ) {
+                            ticketName.add(item.getName() +" : "+ item.getPrice());
+                        }
+                        CharSequence[] array = new CharSequence[ticketName.size()];
+                        AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+                        builder.setTitle("Chọn loại vé")
+                                .setItems( ticketName.toArray(array), new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        Intent intent = new Intent(mContext, BuyTicketActivity.class);
+                                        intent.putExtra("PaymentLink",tickets.get(which).getPaymentLink());
+                                        mContext.startActivity(intent);
+
+                                    }
+                                });
+                        builder.create().show();
+                    }else{
+                        Toast.makeText(mContext, responseModel.getErrorsString(), Toast.LENGTH_SHORT).show();
+                    }
+                }
+
+                @Override
+                public void failure(RetrofitError error) {
+                    DataUtils.getINSTANCE(mContext).ConnectionError();
+                }
+            });
+
     }
 
     public class ContentViewHolder extends RecyclerView.ViewHolder {
