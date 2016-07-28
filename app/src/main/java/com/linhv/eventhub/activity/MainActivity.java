@@ -29,6 +29,7 @@ import com.linhv.eventhub.R;
 import com.linhv.eventhub.custom.RoundedImageView;
 import com.linhv.eventhub.fragment.EventStoragedFragment;
 import com.linhv.eventhub.fragment.HomeFragment;
+import com.linhv.eventhub.fragment.OwnEventFragment;
 import com.linhv.eventhub.fragment.SearchFragment;
 import com.linhv.eventhub.model.response_model.LoginResponseModel;
 import com.linhv.eventhub.services.RestService;
@@ -46,16 +47,24 @@ public class MainActivity extends AppCompatActivity
     private SearchView.OnQueryTextListener queryTextListener;
     private SearchView searchView = null;
     private RestService restService;
+    private String userId;
+    boolean isOrganizer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        viewHolder = new ViewHolder();
-        viewHolder.toolbar = (Toolbar) findViewById(R.id.toolbar);
-        viewHolder.toolbar.setTitle("Trang chủ");
-        setSupportActionBar(viewHolder.toolbar);
+        init();
+        loadUserInfor();
+        menuFatory();
+    }
 
+    private void init(){
+        viewHolder = new ViewHolder();
+        restService = new RestService();
+        viewHolder.toolbar = (Toolbar) findViewById(R.id.toolbar);
+
+        setSupportActionBar(viewHolder.toolbar);
         viewHolder.drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         viewHolder.layoutContentMain = (CoordinatorLayout) findViewById(R.id.main_view);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -70,22 +79,19 @@ public class MainActivity extends AppCompatActivity
         };
         viewHolder.drawerLayout.setDrawerListener(toggle);
         toggle.syncState();
-
         viewHolder.nvMenu = (NavigationView) findViewById(R.id.nav_view);
         viewHolder.nvMenu.setNavigationItemSelectedListener(this);
-        boolean isOrganizer = DataUtils.getINSTANCE(this).getmPreferences().getBoolean(QuickSharePreferences.SHARE_IS_ORGANIZER,false);
-
-        getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.frame_main, new HomeFragment())
-                .commit();
         viewHolder.nvMenu.setCheckedItem(R.id.nav_home);
         viewHolder.headerView = viewHolder.nvMenu.inflateHeaderView(R.layout.nav_header_main);
         viewHolder.ivAvatar = (RoundedImageView) viewHolder.headerView.findViewById(R.id.iv_user_avatar);
         viewHolder.tvFullname = (TextView) viewHolder.headerView.findViewById(R.id.txt_user_fullname);
         viewHolder.tvEmail = (TextView) viewHolder.headerView.findViewById(R.id.txt_user_email);
-        String userId = DataUtils.getINSTANCE(getApplicationContext()).getmPreferences().getString(QuickSharePreferences.SHARE_USERID,"");
-        restService = new RestService();
+        isOrganizer = DataUtils.getINSTANCE(this).getmPreferences().getBoolean(QuickSharePreferences.SHARE_IS_ORGANIZER,false);
+        userId = DataUtils.getINSTANCE(getApplicationContext()).getmPreferences().getString(QuickSharePreferences.SHARE_USERID,"");
+
+    }
+
+    private void loadUserInfor(){
         restService.getUserService().getUserInfo(userId, new Callback<LoginResponseModel>() {
             @Override
             public void success(LoginResponseModel responseModel, Response response) {
@@ -119,6 +125,28 @@ public class MainActivity extends AppCompatActivity
         });
     }
 
+    private void menuFatory(){
+        Menu menu = viewHolder.nvMenu.getMenu();
+        Fragment fragment = null;
+        if (isOrganizer){
+            MenuItem item = menu.findItem(R.id.nav_home).setVisible(false);
+            item = menu.findItem(R.id.nav_save).setVisible(false);
+            item = menu.findItem(R.id.nav_own_event).setVisible(true);
+            getSupportActionBar().setTitle("Sự kiện của tôi");
+            fragment = new OwnEventFragment();
+        }else{
+            MenuItem item = menu.findItem(R.id.nav_home).setVisible(true);
+            item = menu.findItem(R.id.nav_save).setVisible(true);
+            item = menu.findItem(R.id.nav_own_event).setVisible(false);
+            getSupportActionBar().setTitle("Trang chủ");
+            fragment = new HomeFragment();
+        }
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.frame_main, fragment)
+                .commit();
+    }
+
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -130,21 +158,21 @@ public class MainActivity extends AppCompatActivity
     }
 
 
-    @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-
-        return super.onPrepareOptionsMenu(menu);
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        return super.onOptionsItemSelected(item);
-    }
+//    @Override
+//    public boolean onPrepareOptionsMenu(Menu menu) {
+//
+//        return super.onPrepareOptionsMenu(menu);
+//    }
+//
+//    @Override
+//    public boolean onCreateOptionsMenu(Menu menu) {
+//        return true;
+//    }
+//
+//    @Override
+//    public boolean onOptionsItemSelected(MenuItem item) {
+//        return super.onOptionsItemSelected(item);
+//    }
 
 
     @SuppressWarnings("StatementWithEmptyBody")
@@ -163,8 +191,12 @@ public class MainActivity extends AppCompatActivity
                 fragment = new HomeFragment();
                 break;
             case R.id.nav_save:
-                viewHolder.toolbar.setTitle("Sự kiện của tôi");
+                viewHolder.toolbar.setTitle("Sự kiện đã lưu");
                 fragment = new EventStoragedFragment();
+                break;
+            case R.id.nav_own_event:
+                viewHolder.toolbar.setTitle("Sự kiện của tôi");
+                fragment = new OwnEventFragment();
                 break;
             case R.id.nav_logout:
                 DataUtils.getINSTANCE(getApplicationContext()).getmPreferences().edit().clear().commit();

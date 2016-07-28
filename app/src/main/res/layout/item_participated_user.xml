@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal" android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="20sp">
+    <com.linhv.eventhub.custom.RoundedImageView
+        android:id="@+id/iv_participated_user_avatar"
+        android:layout_width="40sp"
+        android:layout_height="40sp"
+        android:src="@drawable/image_default_avatar"/>
+    <TextView
+        android:id="@+id/txt_participated_user_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Nguyễn Vũ Linh"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="20sp"
+        android:textSize="20sp"
+        android:layout_toRightOf="@+id/iv_participated_user_avatar"
+        android:textColor="#000"
+        android:textStyle="bold"/>
+    <ImageView
+        android:id="@+id/iv_is_checked_in"
+        android:layout_width="20sp"
+        android:layout_height="20sp"
+        android:src="@drawable/ic_check"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+
+        />
+</RelativeLayout>

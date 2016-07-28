@@ -11,19 +11,38 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.ListViewCompat;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
+import android.widget.ListView;
+import android.widget.Toast;
 
 import com.google.zxing.Result;
 import com.linhv.eventhub.R;
 import com.linhv.eventhub.adapter.ParticipantTabAdapter;
+import com.linhv.eventhub.adapter.ParticipatedUserAdapter;
+import com.linhv.eventhub.model.User;
+import com.linhv.eventhub.model.response_model.GetParticipatedUsesResponseModel;
+import com.linhv.eventhub.services.RestService;
+import com.linhv.eventhub.utils.DataUtils;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import me.dm7.barcodescanner.zxing.ZXingScannerView;
+import retrofit.Callback;
+import retrofit.RetrofitError;
+import retrofit.client.Response;
 
 public class ParticipantsActivity extends AppCompatActivity  implements ZXingScannerView.ResultHandler{
     private ZXingScannerView mScannerView;
     private ViewHolder viewHolder;
+    private ParticipatedUserAdapter participatedUserAdapter;
+    private List<User> users;
+    private RestService restService;
+    private int eventId;
+    private boolean isStartCamera;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,7 +60,7 @@ public class ParticipantsActivity extends AppCompatActivity  implements ZXingSca
 
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
+        isStartCamera=false;
         checkPermissionCamera();
         init();
 
@@ -49,6 +68,8 @@ public class ParticipantsActivity extends AppCompatActivity  implements ZXingSca
 
     private void init(){
         viewHolder = new ViewHolder();
+        restService = new RestService();
+        eventId = getIntent().getIntExtra("eventId",-1);
          viewHolder.fab = (FloatingActionButton) findViewById(R.id.fab);
         viewHolder.fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -57,18 +78,41 @@ public class ParticipantsActivity extends AppCompatActivity  implements ZXingSca
                 setContentView(mScannerView);
                 mScannerView.setResultHandler(ParticipantsActivity.this); // Register ourselves as a handler for scan results.
                 mScannerView.startCamera();
+                isStartCamera=true;
             }
         });
 
-        viewHolder.tabLayout = (TabLayout) findViewById(R.id.tabs_participant);
-        viewHolder.viewPager = (ViewPager) findViewById(R.id.viewpager_participant);
-        viewHolder.viewPager.setAdapter(new ParticipantTabAdapter(getSupportFragmentManager()));
-        viewHolder.tabLayout.post(new Runnable() {
+        viewHolder.lvUser = (ListView) findViewById(R.id.lv_participated_users);
+        users = new ArrayList<>();
+        participatedUserAdapter = new ParticipatedUserAdapter(this,R.layout.item_participated_user,users);
+        viewHolder.lvUser.setAdapter(participatedUserAdapter);
+//        viewHolder.tabLayout = (TabLayout) findViewById(R.id.tabs_participant);
+//        viewHolder.viewPager = (ViewPager) findViewById(R.id.viewpager_participant);
+//        viewHolder.viewPager.setAdapter(new ParticipantTabAdapter(getSupportFragmentManager()));
+//        viewHolder.tabLayout.post(new Runnable() {
+//            @Override
+//            public void run() {
+//                viewHolder.tabLayout.setupWithViewPager(viewHolder.viewPager);
+////                tabLayout.getTabAt(1).setIcon(R.drawable.ic_phone);
+//
+//            }
+//        });
+        
+        restService.getEventService().getParticipatedUsers(eventId, new Callback<GetParticipatedUsesResponseModel>() {
             @Override
-            public void run() {
-                viewHolder.tabLayout.setupWithViewPager(viewHolder.viewPager);
-//                tabLayout.getTabAt(1).setIcon(R.drawable.ic_phone);
+            public void success(GetParticipatedUsesResponseModel responseModel, Response response) {
+                if (responseModel.isSucceed()){
+                    if (responseModel.getUsers().size()>0){
+                        participatedUserAdapter.setUsers(responseModel.getUsers());
+                    }else{
+                        Toast.makeText(ParticipantsActivity.this, responseModel.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }
 
+            @Override
+            public void failure(RetrofitError error) {
+                DataUtils.getINSTANCE(ParticipantsActivity.this).ConnectionError();
             }
         });
     }
@@ -93,25 +137,31 @@ public class ParticipantsActivity extends AppCompatActivity  implements ZXingSca
     public void handleResult(Result result) {
         Log.e("handler", result.getText()); // Prints scan results
         Log.e("handler", result.getBarcodeFormat().toString()); // Prints the scan format (qrcode)
-
+        onBackPressed();
         // show the scanner result into dialog box.
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Scan Result");
         builder.setMessage(result.getText());
         AlertDialog alert1 = builder.create();
         alert1.show();
+
     }
 
 
     private class ViewHolder{
-        TabLayout tabLayout;
-        ViewPager viewPager;
+        ListView lvUser;
+//        TabLayout tabLayout;
+//        ViewPager viewPager;
         FloatingActionButton fab;
     }
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
-        overridePendingTransition(R.anim.left_in, R.anim.right_out);
+//        super.onBackPressed();
+        if (isStartCamera)
+       recreate();
+        else
+            super.onBackPressed();
+//        overridePendingTransition(R.anim.left_in, R.anim.right_out);
     }
 }

@@ -13,5 +13,6 @@
         android:icon="@drawable/ic_filter"
         android:orderInCategory="110"
         android:title="Lọc"
+        android:visible="false"
         app:showAsAction="always" />
 </menu>

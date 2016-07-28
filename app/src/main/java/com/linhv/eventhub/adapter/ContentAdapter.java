@@ -182,6 +182,7 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.ContentV
                 @Override
                 public void onClick(View v) {
                     Intent intent = new Intent(mContext, ParticipantsActivity.class);
+                    intent.putExtra("eventId",event.getId());
                     mContext.startActivity(intent);
                     
                 }

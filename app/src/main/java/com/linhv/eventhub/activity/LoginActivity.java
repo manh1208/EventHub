@@ -197,7 +197,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     editor.putString(QuickSharePreferences.SHARE_USERID, responseModel.getUser().getId());
 
 //                    boolean isOrganizer = responseModel.getUser().getRole().trim().toUpperCase().equalsIgnoreCase("Organizer".trim().toUpperCase());
-//                    editor.putBoolean(QuickSharePreferences.SHARE_IS_ORGANIZER,isOrganizer);
+                    editor.putBoolean(QuickSharePreferences.SHARE_IS_ORGANIZER,false);
                     editor.commit();
 //                    SharedPreferences sharedPreferences =
 //                            PreferenceManager.getDefaultSharedPreferences(mContext);
@@ -270,8 +270,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                             if (responseModel.isSucceed()) {
                                 SharedPreferences.Editor editor = DataUtils.getINSTANCE(getApplicationContext()).getmPreferences().edit();
                                 editor.putString(QuickSharePreferences.SHARE_USERID, responseModel.getUser().getId());
-//                                boolean isOrganizer = responseModel.getUser().getRole().trim().toUpperCase().equalsIgnoreCase("Organizer".trim().toUpperCase());
-//                                editor.putBoolean(QuickSharePreferences.SHARE_IS_ORGANIZER,isOrganizer);
+                                boolean isOrganizer = responseModel.getUser().getRole().trim().toUpperCase().equalsIgnoreCase("Organizer".trim().toUpperCase());
+                                editor.putBoolean(QuickSharePreferences.SHARE_IS_ORGANIZER,isOrganizer);
                                 editor.commit();
 
                                 SharedPreferences sharedPreferences =

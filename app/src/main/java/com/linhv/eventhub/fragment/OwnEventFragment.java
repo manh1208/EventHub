@@ -41,8 +41,8 @@ import retrofit.client.Response;
 /**
  * Created by ManhNV on 7/5/2016.
  */
-public class EventStoragedFragment extends Fragment implements MenuItemCompat.OnActionExpandListener {
-    private static final String TAG = "Event Storaged";
+public class OwnEventFragment extends Fragment implements MenuItemCompat.OnActionExpandListener {
+    private static final String TAG = "OwnEvent";
     private Context mContext;
     private ViewHolder viewHolder;
     private List<Event> mEvents;
@@ -159,7 +159,8 @@ public class EventStoragedFragment extends Fragment implements MenuItemCompat.On
 
     private void loadData() {
         flag_loading = true;
-            restService.getUserService().getFollowEvent(userId, take, skip, new Callback<GetEventsResponseModel>() {
+
+            restService.getEventService().getEventOfOrganizer(userId, new Callback<GetEventsResponseModel>() {
                 @Override
                 public void success(GetEventsResponseModel responseModel, Response response) {
                     if (viewHolder.layoutRefresh.isRefreshing()) {
@@ -172,11 +173,8 @@ public class EventStoragedFragment extends Fragment implements MenuItemCompat.On
                                 mEvents.add(item);
                             }
                             eventAdapter.setEventList(mEvents);
-                            if (mEvents.size() < (skip + take)) {
                                 isFull = true;
                                 removeFooter();
-                            }
-
                             skip = skip + take;
                         } else {
                             isFull = true;
@@ -193,6 +191,8 @@ public class EventStoragedFragment extends Fragment implements MenuItemCompat.On
 
                 }
             });
+
+
     }
 
     private void removeFooter() {

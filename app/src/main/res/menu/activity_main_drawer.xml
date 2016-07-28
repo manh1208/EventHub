@@ -9,6 +9,10 @@
         <item
             android:id="@+id/nav_save"
             android:icon="@drawable/ic_save_nav"
+            android:title="Sự kiện đã lưu" />
+        <item
+            android:id="@+id/nav_own_event"
+            android:icon="@drawable/ic_own_event"
             android:title="Sự kiện của tôi" />
 
     </group>
