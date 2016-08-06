@@ -12,6 +12,7 @@ public class RestService {
     private retrofit.RestAdapter restAdapter;
     private IUserService userService;
     private IEventService eventService;
+    private IActivityService activityService;
 
     public RestService() {
         restAdapter = new retrofit.RestAdapter.Builder()
@@ -21,6 +22,7 @@ public class RestService {
 
         userService = restAdapter.create(IUserService.class);
         eventService = restAdapter.create(IEventService.class);
+        activityService = restAdapter.create(IActivityService.class);
     }
 
     public IUserService getUserService() {
@@ -29,5 +31,9 @@ public class RestService {
 
     public IEventService getEventService() {
         return eventService;
+    }
+
+    public IActivityService getActivityService() {
+        return activityService;
     }
 }

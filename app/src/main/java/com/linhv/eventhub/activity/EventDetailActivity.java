@@ -1,5 +1,8 @@
 package com.linhv.eventhub.activity;
 
+import android.app.Activity;
+import android.app.ActivityManager;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -36,7 +39,7 @@ public class EventDetailActivity extends AppCompatActivity {
     private Event event;
     private RestService restService;
     private List<EventComponent> components;
-    private EventDetailTabAdapter  detailTabAdapter;
+    private EventDetailTabAdapter detailTabAdapter;
     private Toolbar toolbar;
     private String eventName;
     private String eventImage;
@@ -47,10 +50,10 @@ public class EventDetailActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail_event);
-         toolbar = (Toolbar) findViewById(R.id.toolbar);
-        eventId = getIntent().getIntExtra("eventId",-1);
-        userId = DataUtils.getINSTANCE(this).getmPreferences().getString(QuickSharePreferences.SHARE_USERID,"");
-         eventName = getIntent().getStringExtra("eventName");
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        eventId = getIntent().getIntExtra("eventId", -1);
+        userId = DataUtils.getINSTANCE(this).getmPreferences().getString(QuickSharePreferences.SHARE_USERID, "");
+        eventName = getIntent().getStringExtra("eventName");
         eventImage = getIntent().getStringExtra("eventImage");
         toolbar.setTitle(eventName);
         setSupportActionBar(toolbar);
@@ -68,14 +71,14 @@ public class EventDetailActivity extends AppCompatActivity {
     }
 
     private void getEventDetail() {
-        restService.getEventService().getEvent(eventId,userId, new Callback<GetEventDetailResponseModel>() {
+        restService.getEventService().getEvent(eventId, userId, new Callback<GetEventDetailResponseModel>() {
             @Override
             public void success(GetEventDetailResponseModel responseModel, Response response) {
-                if (responseModel.isSucceed()){
+                if (responseModel.isSucceed()) {
                     event = responseModel.getEvent();
                     toolbar.setTitle(event.getName());
 //                    Toast.makeText(EventDetailActivity.this, event.getName(), Toast.LENGTH_SHORT).show();
-                }else{
+                } else {
                     Toast.makeText(EventDetailActivity.this, responseModel.getErrorsString(), Toast.LENGTH_SHORT).show();
                 }
             }
@@ -95,7 +98,7 @@ public class EventDetailActivity extends AppCompatActivity {
         viewHolder = new ViewHolder();
         viewHolder.tabLayout = (TabLayout) findViewById(R.id.tabs_event_detail);
         viewHolder.viewPager = (ViewPager) findViewById(R.id.viewpager_event_detail);
-        detailTabAdapter = new EventDetailTabAdapter(getSupportFragmentManager(),eventId);
+        detailTabAdapter = new EventDetailTabAdapter(getSupportFragmentManager(), eventId);
         viewHolder.viewPager.setAdapter(detailTabAdapter);
 //        viewHolder.tabLayout.setupWithViewPager(viewHolder.viewPager);
 
@@ -106,7 +109,7 @@ public class EventDetailActivity extends AppCompatActivity {
             }
         });
         viewHolder.image = (CustomImage) findViewById(R.id.iv_detail_event_cover);
-        Picasso.with(this).load(Uri.parse(DataUtils.URL+eventImage))
+        Picasso.with(this).load(Uri.parse(DataUtils.URL + eventImage))
                 .placeholder(R.drawable.placeholder)
                 .error(R.drawable.placeholder)
                 .into(viewHolder.image);
@@ -117,7 +120,7 @@ public class EventDetailActivity extends AppCompatActivity {
         restService.getEventService().getComponent(eventId, new Callback<GetEventComponentResponseModel>() {
             @Override
             public void success(GetEventComponentResponseModel responseModel, Response response) {
-                if (responseModel.isSucceed()){
+                if (responseModel.isSucceed()) {
                     components = responseModel.getComponents();
                     detailTabAdapter.setComponents(components);
 
@@ -131,7 +134,7 @@ public class EventDetailActivity extends AppCompatActivity {
         });
     }
 
-    private final class ViewHolder{
+    private final class ViewHolder {
         ViewPager viewPager;
         TabLayout tabLayout;
         CustomImage image;
@@ -139,7 +142,17 @@ public class EventDetailActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
-        overridePendingTransition(R.anim.left_in,R.anim.right_out);
+        ActivityManager mngr = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
+        List<ActivityManager.RunningTaskInfo> taskList = mngr.getRunningTasks(10);
+        if (taskList.get(0).numActivities == 1 &&
+                taskList.get(0).topActivity.getClassName().equals(this.getClass().getName())) {
+            Intent intent = new Intent(EventDetailActivity.this, MainActivity.class);
+            startActivity(intent);
+            overridePendingTransition(R.anim.left_in, R.anim.right_out);
+            finish();
+        } else {
+            super.onBackPressed();
+            overridePendingTransition(R.anim.left_in, R.anim.right_out);
+        }
     }
 }

@@ -127,7 +127,7 @@ public class EventStoragedFragment extends Fragment implements MenuItemCompat.On
         mEvents = new ArrayList<>();
         viewHolder.lvEvents = (ListView) v.findViewById(R.id.lv_all_event_list);
         viewHolder.layoutRefresh = (SwipeRefreshLayout) v.findViewById(R.id.layout_refresh);
-        eventAdapter = new EventAdapter(getActivity(), R.layout.item_list_event, mEvents,true);
+        eventAdapter = new EventAdapter(getActivity(), R.layout.item_list_event, mEvents,true,false);
         footerView = ((LayoutInflater) this.mContext
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(
                 R.layout.item_load_more, null, false);

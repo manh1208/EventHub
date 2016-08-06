@@ -22,6 +22,7 @@ import com.facebook.share.model.ShareLinkContent;
 import com.facebook.share.widget.ShareButton;
 import com.linhv.eventhub.R;
 import com.linhv.eventhub.activity.BuyTicketActivity;
+import com.linhv.eventhub.activity.EventActivitiesActivity;
 import com.linhv.eventhub.activity.EventDetailActivity;
 import com.linhv.eventhub.activity.ParticipantsActivity;
 import com.linhv.eventhub.dialog.OrganizerDialog;
@@ -152,21 +153,29 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.ContentV
                 viewHolder.btnJoin.setVisibility(View.VISIBLE);
             }
             viewHolder.btnJoin.setEnabled(false);
+            viewHolder.btnJoin.setTag(R.id.activity,viewHolder.btnActivity);
             viewHolder.btnJoin.setOnClickListener(ContentAdapter.this);
+            viewHolder.btnActivity.setOnClickListener(ContentAdapter.this);
             restService.getEventService().getUserParticipation(userId, event.getId(), new Callback<JoinEventFreeResponseModel>() {
                 @Override
                 public void success(JoinEventFreeResponseModel responseModel, Response response) {
                     if (responseModel.isSucceed()){
                         viewHolder.btnJoin.setEnabled(true);
-                        viewHolder.btnJoin.setTag(responseModel.getUserParticipation());
+                        viewHolder.btnJoin.setTag(R.id.participation,responseModel.getUserParticipation());
                         if (responseModel.getUserParticipation()!=null){
                             viewHolder.btnJoin.setText("Xem vé");
+                            if (event.isPublished()) {
+                                viewHolder.btnActivity.setVisibility(View.VISIBLE);
+                            }else{
+                                viewHolder.btnActivity.setVisibility(View.GONE);
+                            }
                         }else{
                             if (event.isFree()) {
                                 viewHolder.btnJoin.setText("Đăng ký");
                             }else{
                                 viewHolder.btnJoin.setText("Mua vé");
                             }
+                            viewHolder.btnActivity.setVisibility(View.GONE);
                         }
                     }
                 }
@@ -206,20 +215,27 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.ContentV
         switch (id){
             case R.id.btn_join_event_free:
                 final Button btn = (Button) v;
+
                 if (!btn.getText().toString().trim().toUpperCase().equals("Xem vé".trim().toUpperCase())){
                     if (event.isFree()) {
+                        final Button btnAct = (Button) v.getTag(R.id.activity);
                         restService.getEventService().joinEventFree(new JoinEventFreeRequestModel(userId, event.getId()),
                                 new Callback<JoinEventFreeResponseModel>() {
-
-
                                     @Override
                                     public void success(JoinEventFreeResponseModel responseModel, Response response) {
                                         if (responseModel.isSucceed()){
                                             Toast.makeText(mContext, "Đăng ký thành công", Toast.LENGTH_SHORT).show();
                                             btn.setText("Xem vé");
-                                            btn.setTag(responseModel.getUserParticipation());
+                                            btn.setTag(R.id.participation,responseModel.getUserParticipation());
+                                            if (event.isPublished()) {
+                                                btnAct.setVisibility(View.VISIBLE);
+                                            }else{
+                                                btnAct.setVisibility(View.GONE);
+                                            }
+//                                            btnAct.setVisibility(View.VISIBLE);
                                         }else{
                                             Toast.makeText(mContext, "Đăng ký không thành công ", Toast.LENGTH_SHORT).show();
+                                            btnAct.setVisibility(View.GONE);
                                         }
                                     }
 
@@ -233,12 +249,18 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.ContentV
                         createDialog();
                     }
                 }else{
-                    UserParticipation userParticipation = (UserParticipation) btn.getTag();
+                    UserParticipation userParticipation = (UserParticipation) btn.getTag(R.id.participation);
                     TicketDialog ticketDialog = new TicketDialog(mContext,userParticipation);
                     ticketDialog.setTitle("Vé của bạn");
                     ticketDialog.show();
 
                 }
+                break;
+            case R.id.btn_event_activity:
+                Intent intent = new Intent(mContext, EventActivitiesActivity.class);
+                intent.putExtra("eventId",event.getId());
+                mContext.startActivity(intent);
+                ((EventDetailActivity)mContext).overridePendingTransition(R.anim.right_in,R.anim.left_out);
                 break;
         }
     }
@@ -291,6 +313,7 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.ContentV
         private Button btnOrganizer;
         private Button btnParticipant;
         private Button btnJoin;
+        private Button btnActivity;
 
         public ContentViewHolder(View convertView) {
             super(convertView);
@@ -304,6 +327,7 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.ContentV
             btnOrganizer = (Button) convertView.findViewById(R.id.btn_event_organizer);
             btnParticipant= (Button) convertView.findViewById(R.id.btn_event_participant);
             btnJoin = (Button) convertView.findViewById(R.id.btn_join_event_free);
+            btnActivity = (Button) convertView.findViewById(R.id.btn_event_activity);
         }
 
     }

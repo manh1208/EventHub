@@ -1,17 +1,22 @@
 package com.linhv.eventhub.services;
 
+import com.linhv.eventhub.model.request_model.CheckInRequestModel;
 import com.linhv.eventhub.model.request_model.JoinEventFreeRequestModel;
 import com.linhv.eventhub.model.request_model.RateEventRequestMode;
 import com.linhv.eventhub.model.response_model.CheckEventOfUserResponseModel;
+import com.linhv.eventhub.model.response_model.CheckInResponseModel;
+import com.linhv.eventhub.model.response_model.GetActivityPublishedResponseModel;
 import com.linhv.eventhub.model.response_model.GetComponentItemsResponseModel;
 import com.linhv.eventhub.model.response_model.GetEventComponentResponseModel;
 import com.linhv.eventhub.model.response_model.GetEventDetailResponseModel;
 import com.linhv.eventhub.model.response_model.GetEventsResponseModel;
 import com.linhv.eventhub.model.response_model.GetOrganizerResponseModel;
+import com.linhv.eventhub.model.response_model.GetParticipatedUsersResponseModel;
 import com.linhv.eventhub.model.response_model.GetParticipatedUsesResponseModel;
 import com.linhv.eventhub.model.response_model.GetTicketsResponseModel;
 import com.linhv.eventhub.model.response_model.JoinEventFreeResponseModel;
 import com.linhv.eventhub.model.response_model.RateEventResponseModel;
+import com.linhv.eventhub.model.response_model.Response;
 
 import retrofit.Callback;
 import retrofit.http.Body;
@@ -89,5 +94,13 @@ public interface IEventService {
 
     @GET("/api/event/GetParticipatedUsers")
     void getParticipatedUsers(@Query("EventId")int eventId,
-                              Callback<GetParticipatedUsesResponseModel> callback);
+                              Callback<GetParticipatedUsersResponseModel> callback);
+
+    @POST("/api/event/CheckIn")
+    void checkInEvent(@Body CheckInRequestModel requestModel,
+                      Callback<CheckInResponseModel> callback);
+
+    @GET("/api/activity/getpublished")
+    void getActivity(@Query("eventId")int eventId,
+                     Callback<GetActivityPublishedResponseModel> callback);
 }

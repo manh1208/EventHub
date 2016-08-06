@@ -55,6 +55,9 @@ public class Event {
    @SerializedName("Rating")
    private Rating rate;
 
+    @SerializedName("EnableInteractionPage")
+    private boolean isPublished;
+
     public Event(int id, String creatorUserID, String organizerId, String name, String imageUrl,
                  String description, String startDate, String endDate, String createdTime,
                  String address, float latitude, float longitude, String seoName, boolean isFree) {
@@ -196,5 +199,13 @@ public class Event {
 
     public void setRate(Rating rate) {
         this.rate = rate;
+    }
+
+    public boolean isPublished() {
+        return isPublished;
+    }
+
+    public void setPublished(boolean published) {
+        isPublished = published;
     }
 }

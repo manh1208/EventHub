@@ -12,6 +12,7 @@ import android.widget.TextView;
 import com.linhv.eventhub.R;
 import com.linhv.eventhub.activity.MainActivity;
 import com.linhv.eventhub.custom.RoundedImageView;
+import com.linhv.eventhub.model.ParticipatedUser;
 import com.linhv.eventhub.model.User;
 import com.linhv.eventhub.utils.DataUtils;
 import com.squareup.picasso.Picasso;
@@ -21,11 +22,11 @@ import java.util.List;
 /**
  * Created by ManhNV on 7/28/16.
  */
-public class ParticipatedUserAdapter extends ArrayAdapter<User> {
+public class ParticipatedUserAdapter extends ArrayAdapter<ParticipatedUser> {
     private Context mContext;
-    private List<User> users;
+    private List<ParticipatedUser> users;
 
-    public ParticipatedUserAdapter(Context context, int resource, List<User> objects) {
+    public ParticipatedUserAdapter(Context context, int resource, List<ParticipatedUser> objects) {
         super(context, resource, objects);
         mContext  = context;
         users = objects;
@@ -37,7 +38,7 @@ public class ParticipatedUserAdapter extends ArrayAdapter<User> {
     }
 
     @Override
-    public User getItem(int position) {
+    public ParticipatedUser getItem(int position) {
         return users.get(position);
     }
 
@@ -52,7 +53,7 @@ public class ParticipatedUserAdapter extends ArrayAdapter<User> {
             viewHolder = (ViewHolder) convertView.getTag();
         }
 
-        User user = getItem(position);
+        User user = getItem(position).getUser();
         viewHolder.txtName.setText(user.getFullName());
 
         String url = user.getImageUrl();
@@ -67,6 +68,11 @@ public class ParticipatedUserAdapter extends ArrayAdapter<User> {
                 .placeholder(R.drawable.image_default_avatar)
                 .error(R.drawable.image_default_avatar)
                 .into(viewHolder.ivAvatar);
+        if (getItem(position).isCheckedIn()){
+            viewHolder.ivChecked.setVisibility(View.VISIBLE);
+        }else{
+            viewHolder.ivChecked.setVisibility(View.GONE);
+        }
         return convertView;
     }
 
@@ -82,7 +88,7 @@ public class ParticipatedUserAdapter extends ArrayAdapter<User> {
         }
     }
 
-    public void setUsers(List<User> users) {
+    public void setUsers(List<ParticipatedUser> users) {
         this.users = users;
         notifyDataSetChanged();
     }

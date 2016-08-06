@@ -36,14 +36,16 @@ public class EventAdapter extends ArrayAdapter<Event> implements View.OnClickLis
     private String userId;
     private RestService restService;
     private boolean isSaved;
+    private boolean isOwnerEvent;
 
-    public EventAdapter(Context context, int resource, List<Event> events, boolean isSaved) {
+    public EventAdapter(Context context, int resource, List<Event> events, boolean isSaved,boolean isOwnerEvent) {
         super(context, resource, events);
         mContext = context;
         mEvents = events;
         userId = DataUtils.getINSTANCE(mContext).getmPreferences().getString(QuickSharePreferences.SHARE_USERID, "");
         restService = new RestService();
         this.isSaved = isSaved;
+        this.isOwnerEvent  = isOwnerEvent;
     }
 
     @Override
@@ -78,6 +80,12 @@ public class EventAdapter extends ArrayAdapter<Event> implements View.OnClickLis
         } else {
             viewHolder = (ViewHolder) convertView.getTag();
         }
+        if (isOwnerEvent){
+            viewHolder.btnSave.setVisibility(View.GONE);
+        }else{
+            viewHolder.btnSave.setVisibility(View.VISIBLE);
+        }
+
         Event event = getItem(position);
         String url = event.getImageUrl().contains("http") ? event.getImageUrl() : DataUtils.URL + event.getImageUrl();
         Picasso.with(mContext).load(Uri.parse(url))

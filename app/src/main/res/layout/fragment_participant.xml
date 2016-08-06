@@ -6,6 +6,12 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior">
+    <!--<Button-->
+        <!--android:id="@+id/btn_test"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:text="ahihi"-->
+        <!--/>-->
     <ListView
         android:id="@+id/lv_participated_users"
         android:layout_width="match_parent"

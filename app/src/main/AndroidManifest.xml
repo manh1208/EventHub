@@ -117,6 +117,22 @@
         <activity
             android:name=".activity.BuyTicketActivity"
             android:label="@string/title_activity_buy_ticket"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".activity.EventActivitiesActivity"
+            android:label="@string/title_activity_event_activities"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".activity.WebViewActivity"
+            android:label="@string/title_activity_web_view"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".activity.StreamActivity"
+            android:label="@string/title_activity_stream"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
+        <activity
+            android:name=".activity.SurveyActivity"
+            android:label="@string/title_activity_survey"
             android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 

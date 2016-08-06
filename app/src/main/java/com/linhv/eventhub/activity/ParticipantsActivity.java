@@ -2,12 +2,14 @@ package com.linhv.eventhub.activity;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.graphics.ColorUtils;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -15,6 +17,7 @@ import android.support.v7.widget.ListViewCompat;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -22,10 +25,19 @@ import com.google.zxing.Result;
 import com.linhv.eventhub.R;
 import com.linhv.eventhub.adapter.ParticipantTabAdapter;
 import com.linhv.eventhub.adapter.ParticipatedUserAdapter;
+import com.linhv.eventhub.model.ParticipatedUser;
 import com.linhv.eventhub.model.User;
+import com.linhv.eventhub.model.request_model.CheckInRequestModel;
+import com.linhv.eventhub.model.response_model.CheckInResponseModel;
+import com.linhv.eventhub.model.response_model.GetParticipatedUsersResponseModel;
 import com.linhv.eventhub.model.response_model.GetParticipatedUsesResponseModel;
+import com.linhv.eventhub.otto.BusStation;
+import com.linhv.eventhub.otto.Message;
 import com.linhv.eventhub.services.RestService;
 import com.linhv.eventhub.utils.DataUtils;
+import com.linhv.eventhub.utils.QuickSharePreferences;
+import com.squareup.otto.Bus;
+import com.squareup.otto.Subscribe;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,9 +51,10 @@ public class ParticipantsActivity extends AppCompatActivity  implements ZXingSca
     private ZXingScannerView mScannerView;
     private ViewHolder viewHolder;
     private ParticipatedUserAdapter participatedUserAdapter;
-    private List<User> users;
+    private List<ParticipatedUser> users;
     private RestService restService;
     private int eventId;
+    private String userId;
     private boolean isStartCamera;
 
     @Override
@@ -70,6 +83,7 @@ public class ParticipantsActivity extends AppCompatActivity  implements ZXingSca
         viewHolder = new ViewHolder();
         restService = new RestService();
         eventId = getIntent().getIntExtra("eventId",-1);
+        userId = DataUtils.getINSTANCE(this).getmPreferences().getString(QuickSharePreferences.SHARE_USERID,"");
          viewHolder.fab = (FloatingActionButton) findViewById(R.id.fab);
         viewHolder.fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -81,7 +95,7 @@ public class ParticipantsActivity extends AppCompatActivity  implements ZXingSca
                 isStartCamera=true;
             }
         });
-
+//        viewHolder.test = (Button) findViewById(R.id.btn_test);
         viewHolder.lvUser = (ListView) findViewById(R.id.lv_participated_users);
         users = new ArrayList<>();
         participatedUserAdapter = new ParticipatedUserAdapter(this,R.layout.item_participated_user,users);
@@ -98,12 +112,16 @@ public class ParticipantsActivity extends AppCompatActivity  implements ZXingSca
 //            }
 //        });
         
-        restService.getEventService().getParticipatedUsers(eventId, new Callback<GetParticipatedUsesResponseModel>() {
+        loadData();
+    }
+
+    private void loadData(){
+        restService.getEventService().getParticipatedUsers(eventId, new Callback<GetParticipatedUsersResponseModel>() {
             @Override
-            public void success(GetParticipatedUsesResponseModel responseModel, Response response) {
+            public void success(GetParticipatedUsersResponseModel responseModel, Response response) {
                 if (responseModel.isSucceed()){
-                    if (responseModel.getUsers().size()>0){
-                        participatedUserAdapter.setUsers(responseModel.getUsers());
+                    if (responseModel.getParticipatedUser().size()>0){
+                        participatedUserAdapter.setUsers(responseModel.getParticipatedUser());
                     }else{
                         Toast.makeText(ParticipantsActivity.this, responseModel.getMessage(), Toast.LENGTH_SHORT).show();
                     }
@@ -137,19 +155,43 @@ public class ParticipantsActivity extends AppCompatActivity  implements ZXingSca
     public void handleResult(Result result) {
         Log.e("handler", result.getText()); // Prints scan results
         Log.e("handler", result.getBarcodeFormat().toString()); // Prints the scan format (qrcode)
-        onBackPressed();
+
         // show the scanner result into dialog box.
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Scan Result");
-        builder.setMessage(result.getText());
-        AlertDialog alert1 = builder.create();
-        alert1.show();
+//        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+//        builder.setTitle("Scan Result");
+//        builder.setMessage(result.getText());
+//        AlertDialog alert1 = builder.create();
+//        alert1.show();
+        int code = Integer.parseInt(result.getText());
+        restService.getEventService().checkInEvent(new CheckInRequestModel(userId, eventId, code), new Callback<CheckInResponseModel>() {
+            @Override
+            public void success(CheckInResponseModel responseModel, Response response) {
+                if (responseModel.isSucceed()){
+                    onBackPressed();
+                    loadData();
+//                    if (responseModel.isSuccessfull()){
+//                        Toast.makeText(ParticipantsActivity.this, "Checked in", Toast.LENGTH_SHORT).show();
+//
+//                    }else{
+//                        Toast.makeText(ParticipantsActivity.this, "Checked in Fail"+responseModel.getMessage(), Toast.LENGTH_SHORT).show();
+//                    }
+                }else{
+                    Toast.makeText(ParticipantsActivity.this,"Checked in error"+ responseModel.getErrorsString(), Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                DataUtils.getINSTANCE(ParticipantsActivity.this).ConnectionError();
+            }
+        });
 
     }
 
 
     private class ViewHolder{
         ListView lvUser;
+//        Button test;
 //        TabLayout tabLayout;
 //        ViewPager viewPager;
         FloatingActionButton fab;
@@ -163,5 +205,37 @@ public class ParticipantsActivity extends AppCompatActivity  implements ZXingSca
         else
             super.onBackPressed();
 //        overridePendingTransition(R.anim.left_in, R.anim.right_out);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Log.i("Bus","regist bus");
+        BusStation.getBus().register(this);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        BusStation.getBus().unregister(this);
+    }
+
+    @Subscribe
+    public void recievedMessage(final Message message){
+        Log.i("Bus","recieve bus");
+        Log.i("Bus Message",message.getMsg());
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                viewHolder.fab.setBackgroundColor(Color.parseColor("#ff0000"));
+//                viewHolder.test.setText(message.getMsg());
+//                viewHolder.test.setEnabled(false);
+//                viewHolder.test.setBackgroundColor(Color.RED);
+//stuff that updates ui
+
+            }
+        });
+
+//        Toast.makeText(ParticipantsActivity.this, message.getMsg(), Toast.LENGTH_SHORT).show();
     }
 }

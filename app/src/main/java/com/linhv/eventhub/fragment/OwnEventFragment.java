@@ -50,7 +50,7 @@ public class OwnEventFragment extends Fragment implements MenuItemCompat.OnActio
     private int skip;
     private int take;
     private boolean isFull;
-    View footerView;
+    private View footerView;
     private boolean flag_loading;
     private RestService restService;
     private EventAdapter eventAdapter;
@@ -70,7 +70,6 @@ public class OwnEventFragment extends Fragment implements MenuItemCompat.OnActio
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.framgment_event_storaged, container, false);
-
         initView(v);
         event();
         return v;
@@ -127,7 +126,7 @@ public class OwnEventFragment extends Fragment implements MenuItemCompat.OnActio
         mEvents = new ArrayList<>();
         viewHolder.lvEvents = (ListView) v.findViewById(R.id.lv_all_event_list);
         viewHolder.layoutRefresh = (SwipeRefreshLayout) v.findViewById(R.id.layout_refresh);
-        eventAdapter = new EventAdapter(getActivity(), R.layout.item_list_event, mEvents,true);
+        eventAdapter = new EventAdapter(getActivity(), R.layout.item_list_event, mEvents,true,true);
         footerView = ((LayoutInflater) this.mContext
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(
                 R.layout.item_load_more, null, false);

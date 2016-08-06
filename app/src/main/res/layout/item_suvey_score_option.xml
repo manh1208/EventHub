@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingTop="20sp"
+    android:paddingLeft="20sp">
+
+    <TextView
+        android:id="@+id/txt_score_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="ahihi"
+        android:textSize="16sp"
+        android:textColor="#000"
+        />
+    <RatingBar
+        android:id="@+id/rb_score_rating"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        android:numStars="2"
+        android:stepSize="0.5" />
+</LinearLayout>

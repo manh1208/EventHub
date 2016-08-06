@@ -18,4 +18,8 @@
     <string name="sender_id">80911170090</string>
     <string name="title_activity_participants">ParticipantsActivity</string>
     <string name="title_activity_buy_ticket">BuyTicketActivity</string>
+    <string name="title_activity_event_activities">EventActivitiesActivity</string>
+    <string name="title_activity_web_view">WebViewActivity</string>
+    <string name="title_activity_stream">StreamActivity</string>
+    <string name="title_activity_survey">SurveyActivity</string>
 </resources>

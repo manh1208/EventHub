@@ -14,7 +14,12 @@ import android.util.Log;
 
 import com.google.android.gms.gcm.GcmListenerService;
 import com.linhv.eventhub.R;
+import com.linhv.eventhub.activity.EventDetailActivity;
 import com.linhv.eventhub.activity.LoginActivity;
+import com.linhv.eventhub.enumeration.Notify;
+import com.linhv.eventhub.otto.BusStation;
+import com.linhv.eventhub.otto.Message;
+import com.squareup.otto.Bus;
 
 public class MyGcmListenerService extends GcmListenerService {
 
@@ -36,37 +41,36 @@ public class MyGcmListenerService extends GcmListenerService {
     }
 
     private void sendNotification(Bundle data) {
-        String message = data.getString("Message");
-//        String title = data.getString("Title");
-//        String questionId = data.getString("QuestionId");
-//        String avatarUrl = data.getString("UserImg");
-//        String notificationId = data.getString("NotificationId");
-//        int id = Integer.parseInt(questionId);
-//        int notiId = Integer.parseInt(notificationId);
-//        Log.i("questionId", id + "");
-//        Log.i("questionIdSrt", questionId);
-        Intent intent = new Intent(this, LoginActivity.class);
-//        intent.putExtra("questionId", id);
-//        intent.putExtra("notiId", notiId);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
-                 PendingIntent.FLAG_ONE_SHOT);
-//        int numOfNotice = DataUtils.getINSTANCE(getApplicationContext()).getmPreferences().getInt(DataUtils.NUM_OF_NOTICE, 0);
-//        numOfNotice++;
-//        DataUtils.getINSTANCE(getApplicationContext()).getmPreferences().edit().putInt(DataUtils.NUM_OF_NOTICE, numOfNotice).commit();
-        Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
-                .setSmallIcon(R.mipmap.ic_launcher)
-                .setContentTitle("EventHub")
-                .setContentText(message)
-                .setColor(getColor(R.color.colorPrimary))
-//              .setLargeIcon(BitmapFactory.decodeResource(getResources(),R.drawable.avatar))
-                .setAutoCancel(true)
-                .setSound(defaultSoundUri)
-                .setPriority(android.app.Notification.PRIORITY_HIGH)
-                .setContentIntent(pendingIntent);
-        NotificationManager notificationManager =
-                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        notificationManager.notify(0 /* ID of notification */, notificationBuilder.build());
+        int type = Integer.parseInt(data.getString("Type"));
+        if (type == Notify.ACTIVITY.getValue()) {
+            BusStation.getBus().post(new Message("Ahihi đồ ngốc"));
+        } else if (type == Notify.APPROVEDEVENT.getValue()) {
+            String message = data.getString("Message");
+            String title = data.getString("Title");
+            int eventId = Integer.parseInt(data.getString("EventId"));
+            int notificationId = Integer.parseInt(data.getString("NotificationId"));
+            Intent intent = new Intent(this, EventDetailActivity.class);
+            intent.putExtra("eventId", eventId);
+            intent.putExtra("notiId", notificationId);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            PendingIntent pendingIntent = PendingIntent.getActivity(this, eventId /* Request code */, intent,
+                    PendingIntent.FLAG_ONE_SHOT);
+            Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+            NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
+                    .setSmallIcon(R.mipmap.ic_launcher)
+                    .setContentTitle(title)
+                    .setContentText(message)
+                    .setColor(getColor(R.color.colorPrimary))
+                    .setAutoCancel(true)
+                    .setSound(defaultSoundUri)
+                    .setPriority(android.app.Notification.PRIORITY_HIGH)
+                    .setContentIntent(pendingIntent);
+            NotificationManager notificationManager =
+                    (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            notificationManager.notify(notificationId /* ID of notification */, notificationBuilder.build());
+        } else if (type == Notify.MESSAGE.getValue()) {
+
+        }
+
     }
 }

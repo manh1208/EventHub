@@ -37,9 +37,11 @@ public class Response{
 
     public String getErrorsString() {
         String errorsString = "";
-        for (String item : getErrors()
-                ) {
-            errorsString += item + "\n";
+        if (getErrors()!=null && getErrors().size()>0) {
+            for (String item : getErrors()
+                    ) {
+                errorsString += item + "\n";
+            }
         }
         return errorsString;
     }
