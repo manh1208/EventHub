@@ -27,15 +27,15 @@
             <com.linhv.eventhub.custom.CustomImage
                 android:id="@+id/iv_detail_event_cover"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="250sp"
                 android:src="@drawable/placeholder"
                 android:alpha="0.6"
                 app:layout_collapseMode="parallax"
                 android:visibility="visible"/>
 
-
             <android.support.v7.widget.Toolbar
                 android:id="@+id/toolbar"
+                android:title="ahihi"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
                 app:popupTheme="@style/AppTheme.PopupOverlay"

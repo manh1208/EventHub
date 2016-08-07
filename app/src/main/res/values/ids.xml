@@ -2,4 +2,6 @@
 <resources>
     <item name="activity" type="id"/>
     <item name="participation" type="id"/>
+    <item name="optionId" type="id"/>
+    <item name="anotherTag" type="id"/>
 </resources>
