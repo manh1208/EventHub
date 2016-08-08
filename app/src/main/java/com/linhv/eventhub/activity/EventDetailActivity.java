@@ -36,13 +36,11 @@ import retrofit.client.Response;
 public class EventDetailActivity extends AppCompatActivity {
     ViewHolder viewHolder;
     private int eventId;
+    private String eventName;
     private Event event;
     private RestService restService;
     private List<EventComponent> components;
     private EventDetailTabAdapter detailTabAdapter;
-    private Toolbar toolbar;
-    private String eventName;
-    private String eventImage;
     private String userId;
 
 
@@ -50,21 +48,7 @@ public class EventDetailActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail_event);
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
-        eventId = getIntent().getIntExtra("eventId", -1);
-        userId = DataUtils.getINSTANCE(this).getmPreferences().getString(QuickSharePreferences.SHARE_USERID, "");
-        eventName = getIntent().getStringExtra("eventName");
-        eventImage = getIntent().getStringExtra("eventImage");
-        toolbar.setTitle(eventName);
-        setSupportActionBar(toolbar);
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onBackPressed();
-            }
-        });
-//        getSupportActionBar().setDisplayShowHomeEnabled(true);
-//        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         init();
 
         getEventDetail();
@@ -76,7 +60,17 @@ public class EventDetailActivity extends AppCompatActivity {
             public void success(GetEventDetailResponseModel responseModel, Response response) {
                 if (responseModel.isSucceed()) {
                     event = responseModel.getEvent();
-                    toolbar.setTitle(event.getName());
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            viewHolder.toolbar.setTitle(event.getName());
+                        }
+                    });
+
+                    Picasso.with(EventDetailActivity.this).load(Uri.parse(DataUtils.URL + event.getImageUrl()))
+                            .placeholder(R.drawable.placeholder)
+                            .error(R.drawable.placeholder)
+                            .into(viewHolder.image);
 //                    Toast.makeText(EventDetailActivity.this, event.getName(), Toast.LENGTH_SHORT).show();
                 } else {
                     Toast.makeText(EventDetailActivity.this, responseModel.getErrorsString(), Toast.LENGTH_SHORT).show();
@@ -96,6 +90,20 @@ public class EventDetailActivity extends AppCompatActivity {
 
         restService = new RestService();
         viewHolder = new ViewHolder();
+        viewHolder.toolbar = (Toolbar) findViewById(R.id.toolbar);
+        eventId = getIntent().getIntExtra("eventId", -1);
+        eventName = getIntent().getStringExtra("eventName");
+        viewHolder.toolbar.setTitle(eventName);
+        userId = DataUtils.getINSTANCE(this).getmPreferences().getString(QuickSharePreferences.SHARE_USERID, "");
+        setSupportActionBar(viewHolder.toolbar);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        viewHolder.toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
         viewHolder.tabLayout = (TabLayout) findViewById(R.id.tabs_event_detail);
         viewHolder.viewPager = (ViewPager) findViewById(R.id.viewpager_event_detail);
         detailTabAdapter = new EventDetailTabAdapter(getSupportFragmentManager(), eventId);
@@ -109,10 +117,7 @@ public class EventDetailActivity extends AppCompatActivity {
             }
         });
         viewHolder.image = (CustomImage) findViewById(R.id.iv_detail_event_cover);
-        Picasso.with(this).load(Uri.parse(DataUtils.URL + eventImage))
-                .placeholder(R.drawable.placeholder)
-                .error(R.drawable.placeholder)
-                .into(viewHolder.image);
+
         getComponent();
     }
 
@@ -138,6 +143,7 @@ public class EventDetailActivity extends AppCompatActivity {
         ViewPager viewPager;
         TabLayout tabLayout;
         CustomImage image;
+        Toolbar toolbar;
     }
 
     @Override

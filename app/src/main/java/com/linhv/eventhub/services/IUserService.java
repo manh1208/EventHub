@@ -7,6 +7,7 @@ import com.linhv.eventhub.model.request_model.RegisterRequestModel;
 import com.linhv.eventhub.model.response_model.ExternalLoginResponseModel;
 import com.linhv.eventhub.model.response_model.FollowEventResponseModel;
 import com.linhv.eventhub.model.response_model.GetEventsResponseModel;
+import com.linhv.eventhub.model.response_model.GetNotificationResponseModel;
 import com.linhv.eventhub.model.response_model.LoginResponseModel;
 import com.linhv.eventhub.model.response_model.RegisterResponseModel;
 import com.linhv.eventhub.model.response_model.SendTokenResponseModel;
@@ -25,6 +26,10 @@ public interface IUserService {
 
     @POST("/api/account/externallogin")
     void externalLogin(@Body ExternalLoginRequestModel request, Callback<ExternalLoginResponseModel> callback);
+
+    @GET("/api/account/getnotifications")
+    void getNotification(@Query("userid")String userId,
+                         Callback<GetNotificationResponseModel> callback);
 
     @POST("/api/account/login")
     void login(@Body LoginRequestModel request, Callback<LoginResponseModel> callback);

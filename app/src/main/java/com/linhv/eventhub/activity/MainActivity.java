@@ -29,6 +29,7 @@ import com.linhv.eventhub.R;
 import com.linhv.eventhub.custom.RoundedImageView;
 import com.linhv.eventhub.fragment.EventStoragedFragment;
 import com.linhv.eventhub.fragment.HomeFragment;
+import com.linhv.eventhub.fragment.NotificationFragment;
 import com.linhv.eventhub.fragment.OwnEventFragment;
 import com.linhv.eventhub.fragment.SearchFragment;
 import com.linhv.eventhub.model.response_model.LoginResponseModel;
@@ -198,6 +199,10 @@ public class MainActivity extends AppCompatActivity
                 viewHolder.toolbar.setTitle("Sự kiện của tôi");
                 fragment = new OwnEventFragment();
                 break;
+            case R.id.nav_notice:
+                viewHolder.toolbar.setTitle("Thông báo");
+                fragment = new NotificationFragment();
+                break;
             case R.id.nav_logout:
                 DataUtils.getINSTANCE(getApplicationContext()).getmPreferences().edit().clear().commit();
                 FacebookSdk.sdkInitialize(getApplicationContext());
@@ -207,6 +212,7 @@ public class MainActivity extends AppCompatActivity
                 overridePendingTransition(R.anim.left_in,R.anim.right_out);
                 finish();
                 return true;
+
         }
         if (fragment != null) {
             getSupportFragmentManager()

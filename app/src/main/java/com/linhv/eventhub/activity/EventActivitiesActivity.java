@@ -41,7 +41,6 @@ public class EventActivitiesActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitle("Hoạt động");
         setSupportActionBar(toolbar);
-
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -76,6 +75,8 @@ public class EventActivitiesActivity extends AppCompatActivity {
                 }
                 else if (activity.getType()==ActivityEnum.RemoteMic.getValue()){
                     Intent intent = new Intent(EventActivitiesActivity.this,StreamActivity.class);
+                    intent.putExtra("eventId",eventId);
+                    intent.putExtra("activityId",activity.getId());
                     startActivity(intent);
                     overridePendingTransition(R.anim.right_in,R.anim.left_out);
                 }
