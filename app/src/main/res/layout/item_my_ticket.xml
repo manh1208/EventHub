@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingTop="1sp"
+    android:paddingBottom="1sp"
+    android:paddingLeft="5sp"
+    android:paddingRight="5sp"
+    >
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#fff"
+        android:padding="10sp">
+        <com.linhv.eventhub.custom.CustomImage
+            android:id="@+id/iv_myticket_image"
+            android:layout_width="100sp"
+            android:layout_height="wrap_content"
+            android:src="@drawable/image_cover_event"/>
+    <com.linhv.eventhub.custom.CustomTextViewLight
+        android:id="@+id/txt_myticket_event_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10sp"
+        android:text="ahihi"
+        android:textColor="#000"
+        android:textSize="18sp"/>
+    </LinearLayout>
+</LinearLayout>

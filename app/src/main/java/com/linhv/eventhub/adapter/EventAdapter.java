@@ -74,17 +74,17 @@ public class EventAdapter extends ArrayAdapter<Event> implements View.OnClickLis
             viewHolder.tvEventName = (CustomTextViewLight) convertView.findViewById(R.id.tv_top_event_name);
             viewHolder.tvEventDate = (TextView) convertView.findViewById(R.id.tv_top_event_date_time);
             viewHolder.tvEventType = (TextView) convertView.findViewById(R.id.tv_top_event_type);
-            viewHolder.tvEventLocation = (TextView) convertView.findViewById(R.id.tv_top_event_location);
-            viewHolder.btnSave = (ImageButton) convertView.findViewById(R.id.btn_top_event_save);
+//            viewHolder.tvEventLocation = (TextView) convertView.findViewById(R.id.tv_top_event_location);
+//            viewHolder.btnSave = (ImageButton) convertView.findViewById(R.id.btn_top_event_save);
             convertView.setTag(viewHolder);
         } else {
             viewHolder = (ViewHolder) convertView.getTag();
         }
-        if (isOwnerEvent){
-            viewHolder.btnSave.setVisibility(View.GONE);
-        }else{
-            viewHolder.btnSave.setVisibility(View.VISIBLE);
-        }
+//        if (isOwnerEvent){
+//            viewHolder.btnSave.setVisibility(View.GONE);
+//        }else{
+//            viewHolder.btnSave.setVisibility(View.VISIBLE);
+//        }
 
         Event event = getItem(position);
         String url = event.getImageUrl().contains("http") ? event.getImageUrl() : DataUtils.URL + event.getImageUrl();
@@ -100,9 +100,9 @@ public class EventAdapter extends ArrayAdapter<Event> implements View.OnClickLis
         }
         viewHolder.tvEventName.setText(event.getName());
         viewHolder.tvEventDate.setText(DataUtils.parseDatetimeAPI(event.getStartDate(), "dd - MMM - yyyy"));
-//        viewHolder.tvEventType.setText(event.get());
-        viewHolder.btnSave.setTag(position);
-        viewHolder.btnSave.setOnClickListener(this);
+        viewHolder.tvEventType.setText(event.getCategory());
+//        viewHolder.btnSave.setTag(position);
+//        viewHolder.btnSave.setOnClickListener(this);
         return convertView;
     }
 
@@ -111,33 +111,33 @@ public class EventAdapter extends ArrayAdapter<Event> implements View.OnClickLis
         DataUtils.getAlphaAmination(v);
         int id = v.getId();
         switch (id) {
-            case R.id.btn_top_event_save:
-                final int position = (int) v.getTag();
-
-                restService.getUserService().followEvent(getItem(position).getId(), userId, new Callback<FollowEventResponseModel>() {
-                    @Override
-                    public void success(FollowEventResponseModel responseModel, Response response) {
-                        if (responseModel.isSucceed()) {
-                            if (isSaved) {
-                                mEvents.remove(position);
-                                notifyDataSetChanged();
-                            } else {
-                                if (responseModel.getFollow().isActive()) {
-                                    Toast.makeText(mContext, "Event was saved", Toast.LENGTH_SHORT).show();
-                                } else {
-                                    Toast.makeText(mContext, "Event was unsaved", Toast.LENGTH_SHORT).show();
-                                }
-                            }
-
-                        }
-                    }
-
-                    @Override
-                    public void failure(RetrofitError error) {
-                        Toast.makeText(mContext, error.getResponse().getReason(), Toast.LENGTH_SHORT).show();
-                    }
-                });
-                break;
+//            case R.id.btn_top_event_save:
+//                final int position = (int) v.getTag();
+//
+//                restService.getUserService().followEvent(getItem(position).getId(), userId, new Callback<FollowEventResponseModel>() {
+//                    @Override
+//                    public void success(FollowEventResponseModel responseModel, Response response) {
+//                        if (responseModel.isSucceed()) {
+//                            if (isSaved) {
+//                                mEvents.remove(position);
+//                                notifyDataSetChanged();
+//                            } else {
+//                                if (responseModel.getFollow().isActive()) {
+//                                    Toast.makeText(mContext, "Event was saved", Toast.LENGTH_SHORT).show();
+//                                } else {
+//                                    Toast.makeText(mContext, "Event was unsaved", Toast.LENGTH_SHORT).show();
+//                                }
+//                            }
+//
+//                        }
+//                    }
+//
+//                    @Override
+//                    public void failure(RetrofitError error) {
+//                        Toast.makeText(mContext, error.getResponse().getReason(), Toast.LENGTH_SHORT).show();
+//                    }
+//                });
+//                break;
         }
     }
 
@@ -152,8 +152,8 @@ public class EventAdapter extends ArrayAdapter<Event> implements View.OnClickLis
         CustomTextViewLight tvEventName;
         TextView tvEventDate;
         TextView tvEventType;
-        TextView tvEventLocation;
-        ImageButton btnSave;
+//        TextView tvEventLocation;
+//        ImageButton btnSave;
     }
 
 }

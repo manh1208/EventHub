@@ -162,29 +162,36 @@ public class ParticipantsActivity extends AppCompatActivity  implements ZXingSca
 //        builder.setMessage(result.getText());
 //        AlertDialog alert1 = builder.create();
 //        alert1.show();
-        int code = Integer.parseInt(result.getText());
-        restService.getEventService().checkInEvent(new CheckInRequestModel(userId, eventId, code), new Callback<CheckInResponseModel>() {
-            @Override
-            public void success(CheckInResponseModel responseModel, Response response) {
-                if (responseModel.isSucceed()){
-                    onBackPressed();
-                    loadData();
+        try {
+            int code = Integer.parseInt(result.getText());
+
+            restService.getEventService().checkInEvent(new CheckInRequestModel(userId, eventId, code), new Callback<CheckInResponseModel>() {
+                @Override
+                public void success(CheckInResponseModel responseModel, Response response) {
+                    if (responseModel.isSucceed()) {
+                        onBackPressed();
+                        loadData();
 //                    if (responseModel.isSuccessfull()){
 //                        Toast.makeText(ParticipantsActivity.this, "Checked in", Toast.LENGTH_SHORT).show();
 //
 //                    }else{
 //                        Toast.makeText(ParticipantsActivity.this, "Checked in Fail"+responseModel.getMessage(), Toast.LENGTH_SHORT).show();
 //                    }
-                }else{
-                    Toast.makeText(ParticipantsActivity.this,"Checked in error"+ responseModel.getErrorsString(), Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(ParticipantsActivity.this, responseModel.getErrorsString(), Toast.LENGTH_SHORT).show();
+                        recreate();
+                    }
                 }
-            }
 
-            @Override
-            public void failure(RetrofitError error) {
-                DataUtils.getINSTANCE(ParticipantsActivity.this).ConnectionError();
-            }
-        });
+                @Override
+                public void failure(RetrofitError error) {
+                    DataUtils.getINSTANCE(ParticipantsActivity.this).ConnectionError();
+                }
+            });
+        }catch (Exception e){
+            Toast.makeText(ParticipantsActivity.this,"QR Code không hợp lệ", Toast.LENGTH_SHORT).show();
+            recreate();
+        }
 
     }
 

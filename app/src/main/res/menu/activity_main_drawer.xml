@@ -11,48 +11,22 @@
             android:icon="@drawable/ic_save_nav"
             android:title="Sự kiện đã lưu" />
         <item
+            android:id="@+id/nav_my_ticket"
+            android:icon="@drawable/ic_ticket"
+            android:title="Vé của tôi" />
+        <item
             android:id="@+id/nav_own_event"
             android:icon="@drawable/ic_own_event"
             android:title="Sự kiện của tôi" />
 
     </group>
-
-    <item android:title="Cài đặt">
-        <menu>
-            <item
-                android:id="@+id/nav_edit_avatar"
-                android:title="Chỉnh sửa ảnh đại diện" />
-            <item
-                android:id="@+id/nav_change_password"
-                android:title="Đỗi mật khẩu" />
-        </menu>
-    </item>
     <item android:title="Khác">
         <menu>
             <item
                 android:id="@+id/nav_notice"
                 android:icon="@drawable/ic_thongbao"
                 android:title="Thông báo" />
-            <item
-                android:id="@+id/nav_about"
-                android:icon="@drawable/ic_gioithieu"
-                android:title="Giới thiệu" />
-            <item
-                android:id="@+id/nav_event_hub"
-                android:icon="@drawable/ic_aboutus"
-                android:title="Về Event Hub" />
-            <item
-                android:id="@+id/nav_contact"
-                android:icon="@drawable/ic_lienhe"
-                android:title="Liên hệ với chúng tôi" />
-            <item
-                android:id="@+id/nav_contraint"
-                android:icon="@drawable/ic_policy"
-                android:title="Điều khoản" />
-            <item
-                android:id="@+id/nav_answer"
-                android:icon="@drawable/ic_giaidap"
-                android:title="Giải đáp" />
+
             <item
                 android:id="@+id/nav_logout"
                 android:icon="@drawable/ic_logout"

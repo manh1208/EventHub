@@ -36,7 +36,7 @@ public class Response{
     }
 
     public String getErrorsString() {
-        String errorsString = "";
+        String errorsString = this.message+"\n";
         if (getErrors()!=null && getErrors().size()>0) {
             for (String item : getErrors()
                     ) {

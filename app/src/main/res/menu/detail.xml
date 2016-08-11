@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/menu_detail_favorite"
+        android:icon="@drawable/favorite"
+        android:orderInCategory="110"
+        android:title="Lưu"
+        android:visible="true"
+        app:showAsAction="always" />
+</menu>

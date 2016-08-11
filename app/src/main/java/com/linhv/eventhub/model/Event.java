@@ -5,6 +5,7 @@ import com.linhv.eventhub.model.response_model.RateEventResponseModel;
 
 import java.sql.Date;
 import java.text.SimpleDateFormat;
+import java.util.List;
 
 /**
  * Created by ManhNV on 7/5/2016.
@@ -52,8 +53,13 @@ public class Event {
     @SerializedName("IsFree")
     private boolean isFree;
 
-   @SerializedName("Rating")
-   private Rating rate;
+    @SerializedName("Rating")
+    private Rating rate;
+    @SerializedName("IsFollowed")
+    private boolean followed;
+
+    @SerializedName("Categories")
+    private List<String> categories;
 
     @SerializedName("EnableInteractionPage")
     private boolean isPublished;
@@ -207,5 +213,28 @@ public class Event {
 
     public void setPublished(boolean published) {
         isPublished = published;
+    }
+
+    public boolean isFollowed() {
+        return followed;
+    }
+
+    public void setFollowed(boolean followed) {
+        this.followed = followed;
+    }
+
+    public String getCategory() {
+        String result = "";
+        if (categories != null) {
+            for (int i=0;i<this.categories.size();i++
+                    ) {
+                result += this.categories.get(i) + (i==this.categories.size()-1?"":", ");
+            }
+            return result;
+        } else {
+            return "";
+        }
+
+
     }
 }

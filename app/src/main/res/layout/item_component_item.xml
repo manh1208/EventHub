@@ -10,14 +10,17 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="#fff"
-        android:paddingBottom="10sp">
+        android:paddingBottom="10sp"
+        android:paddingTop="10sp"
+        >
 
         <com.linhv.eventhub.custom.CustomImage
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:src="@drawable/image_default_avatar"
-            android:id="@+id/iv_item_image"/>
+            android:id="@+id/iv_item_image"
+            android:layout_margin="10sp"/>
 
         <TextView
             android:layout_width="match_parent"
@@ -41,8 +44,8 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingLeft="5sp"
-            android:paddingRight="5sp"
+            android:paddingLeft="10sp"
+            android:paddingRight="10sp"
             android:text="js flexbox flexboxlegacy canvas canvastext webgl no-touch geolocation postmessage websqldatabase indexeddb hashchange history draganddrop websockets rgba hsla multiplebgs backgroundsize borderimage borderradius boxshadow textshadow opacity cssanimations csscolumns cssgradients cssreflections csstransforms csstransforms3d csstransitions fontface generatedcontent video audio localstorage sessionstorage webworkers applicationcache svg inlinesvg smil svgclippaths js flexbox flexboxlegacy canvas canvastext webgl no-touch geolocation postmessage websqldatabase indexeddb hashchange history draganddrop websockets rgba hsla multiplebgs backgroundsize borderimage borderradius boxshadow textshadow opacity cssanimations csscolumns cssgradients cssreflections csstransforms csstransforms3d csstransitions fontface generatedcontent video audio localstorage sessionstorage webworkers applicationcache svg inlinesvg smil svgclippaths"
             android:textColor="#000"
             android:textSize="18sp"

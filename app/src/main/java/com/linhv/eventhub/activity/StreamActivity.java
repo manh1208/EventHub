@@ -67,6 +67,9 @@ public class StreamActivity extends AppCompatActivity {
     int minBufSize = AudioRecord.getMinBufferSize(sampleRate, channelConfig, audioFormat);
     private boolean status = true;
     private String ip;
+    private ImageView imageView;
+    private ImageView imageView1;
+    private ImageView imageView2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,9 +92,9 @@ public class StreamActivity extends AppCompatActivity {
         activityId = getIntent().getIntExtra("activityId", -1);
         isStart = getIntent().getBooleanExtra("start", false);
         restService = new RestService();
-        final ImageView imageView = (ImageView) findViewById(R.id.iv_animation_one);
-        final ImageView imageView1 = (ImageView) findViewById(R.id.iv_animation_two);
-        final ImageView imageView2 = (ImageView) findViewById(R.id.iv_animation_three);
+        imageView = (ImageView) findViewById(R.id.iv_animation_one);
+        imageView1 = (ImageView) findViewById(R.id.iv_animation_two);
+        imageView2 = (ImageView) findViewById(R.id.iv_animation_three);
         button = (Button) findViewById(R.id.btn_stream);
         button.setText("Tham gia");
         first = getAnimation();
@@ -122,6 +125,7 @@ public class StreamActivity extends AppCompatActivity {
 //                    stop();
                 } else {
                     if (button1.getText().toString().trim().toUpperCase().equals("Tham gia".toUpperCase())) {
+                        setVisibleImage(View.VISIBLE);
                         imageView.startAnimation(first);
                         new Handler().postDelayed(new Runnable() {
                             @Override
@@ -174,6 +178,20 @@ public class StreamActivity extends AppCompatActivity {
 //        }).start();
     }
 
+    private void setVisibleImage(int visible) {
+        imageView.setVisibility(visible);
+        imageView1.setVisibility(visible);
+        imageView2.setVisibility(visible);
+    }
+
+//    private void setColorImage(int color) {
+//
+//        imageView.setback(visible);
+//        imageView1.setVisibility(visible);
+//        imageView2.setVisibility(visible);
+//    }
+
+
 
     private void stopStream() {
 
@@ -187,6 +205,7 @@ public class StreamActivity extends AppCompatActivity {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
+                setVisibleImage(View.GONE);
                 button.setText("Tham gia");
                 button.setEnabled(true);
                 isStart = false;

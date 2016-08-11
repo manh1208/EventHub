@@ -38,5 +38,6 @@
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
         android:alpha="0.5"
+
         android:src="@drawable/background_button_stream"/>
 </RelativeLayout>

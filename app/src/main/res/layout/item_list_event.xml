@@ -41,16 +41,16 @@
             android:layout_height="wrap_content"
             android:paddingBottom="10sp">
 
-            <ImageButton
-                android:id="@+id/btn_top_event_save"
-                android:layout_width="40sp"
-                android:layout_height="40sp"
-                android:layout_alignParentRight="true"
-                android:layout_centerVertical="true"
-                android:layout_marginRight="10sp"
-                android:background="@null"
-                android:scaleType="fitCenter"
-                android:src="@drawable/ic_save" />
+            <!--<ImageButton-->
+                <!--android:id="@+id/btn_top_event_save"-->
+                <!--android:layout_width="40sp"-->
+                <!--android:layout_height="40sp"-->
+                <!--android:layout_alignParentRight="true"-->
+                <!--android:layout_centerVertical="true"-->
+                <!--android:layout_marginRight="10sp"-->
+                <!--android:background="@null"-->
+                <!--android:scaleType="fitCenter"-->
+                <!--android:src="@drawable/ic_save" />-->
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -86,16 +86,7 @@
                     android:textColor="#e87b74"
                     android:textSize="15sp" />
 
-                <TextView
-                    android:id="@+id/tv_top_event_location"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="5sp"
-                    android:background="@drawable/background_lable_city"
-                    android:paddingLeft="10sp"
-                    android:paddingRight="10sp"
-                    android:text="Hồ Chí Minh"
-                    android:textColor="#fff" />
+
             </LinearLayout>
         </RelativeLayout>
     </LinearLayout>

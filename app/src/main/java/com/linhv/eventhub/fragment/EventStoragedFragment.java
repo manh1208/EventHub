@@ -328,6 +328,11 @@ public class EventStoragedFragment extends Fragment implements MenuItemCompat.On
     }
 
     @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
         reloadAllEvent();

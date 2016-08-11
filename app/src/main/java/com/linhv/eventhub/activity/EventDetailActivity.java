@@ -11,6 +11,8 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
@@ -20,6 +22,7 @@ import com.linhv.eventhub.adapter.HomeTabAdapter;
 import com.linhv.eventhub.custom.CustomImage;
 import com.linhv.eventhub.model.Event;
 import com.linhv.eventhub.model.EventComponent;
+import com.linhv.eventhub.model.response_model.FollowEventResponseModel;
 import com.linhv.eventhub.model.response_model.GetEventComponentResponseModel;
 import com.linhv.eventhub.model.response_model.GetEventDetailResponseModel;
 import com.linhv.eventhub.services.RestService;
@@ -42,6 +45,7 @@ public class EventDetailActivity extends AppCompatActivity {
     private List<EventComponent> components;
     private EventDetailTabAdapter detailTabAdapter;
     private String userId;
+    private Menu menu;
 
 
     @Override
@@ -66,7 +70,11 @@ public class EventDetailActivity extends AppCompatActivity {
                             viewHolder.toolbar.setTitle(event.getName());
                         }
                     });
-
+                    if (event.isFollowed()) {
+                        menu.findItem(R.id.menu_detail_favorite).setIcon(R.drawable.favorited);
+                    }else{
+                        menu.findItem(R.id.menu_detail_favorite).setIcon(R.drawable.favorite);
+                    }
                     Picasso.with(EventDetailActivity.this).load(Uri.parse(DataUtils.URL + event.getImageUrl()))
                             .placeholder(R.drawable.placeholder)
                             .error(R.drawable.placeholder)
@@ -144,6 +152,48 @@ public class EventDetailActivity extends AppCompatActivity {
         TabLayout tabLayout;
         CustomImage image;
         Toolbar toolbar;
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.detail, menu);
+        this.menu  = menu;
+        return true;
+    }
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        final MenuItem finalItem = item;
+        int id = item.getItemId();
+        switch (id){
+            case R.id.menu_detail_favorite:
+                restService.getUserService().followEvent(eventId, userId, new Callback<FollowEventResponseModel>() {
+                    @Override
+                    public void success(FollowEventResponseModel responseModel, Response response) {
+                        if (responseModel.isSucceed()) {
+
+                                if (responseModel.getFollow().isActive()) {
+                                    finalItem.setIcon(R.drawable.favorited);
+                                    Toast.makeText(EventDetailActivity.this, "Event was saved", Toast.LENGTH_SHORT).show();
+                                } else {
+                                    finalItem.setIcon(R.drawable.favorite);
+                                    Toast.makeText(EventDetailActivity.this, "Event was unsaved", Toast.LENGTH_SHORT).show();
+                                }
+
+
+                        }
+                    }
+
+                    @Override
+                    public void failure(RetrofitError error) {
+                        Toast.makeText(EventDetailActivity.this, error.getResponse().getReason(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override

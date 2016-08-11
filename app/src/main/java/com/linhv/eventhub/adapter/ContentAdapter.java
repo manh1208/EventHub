@@ -28,6 +28,7 @@ import com.linhv.eventhub.activity.ParticipantsActivity;
 import com.linhv.eventhub.dialog.OrganizerDialog;
 import com.linhv.eventhub.dialog.TicketDialog;
 import com.linhv.eventhub.model.Event;
+import com.linhv.eventhub.model.Rating;
 import com.linhv.eventhub.model.Ticket;
 import com.linhv.eventhub.model.UserParticipation;
 import com.linhv.eventhub.model.request_model.JoinEventFreeRequestModel;
@@ -91,9 +92,10 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.ContentV
                     super.onReceivedError(view, request, error);
                 }
             });
-            viewHolder.rbRate.setRating(event.getRate().getUserRate());
-            viewHolder.txtRating.setText(event.getRate().getPoint() + "");
-            viewHolder.txtNumOfRate.setText(event.getRate().getNumOfRate() + "");
+
+            viewHolder.rbRate.setRating(event.getRate()==null?0:event.getRate().getUserRate());
+            viewHolder.txtRating.setText(event.getRate()==null?0+"":event.getRate().getPoint() + "");
+            viewHolder.txtNumOfRate.setText(event.getRate()==null?0+"":event.getRate().getNumOfRate() + "");
             viewHolder.rbRate.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
                 @Override
                 public void onRatingChanged(RatingBar ratingBar, float rating, boolean fromUser) {
@@ -101,6 +103,9 @@ public class ContentAdapter extends RecyclerView.Adapter<ContentAdapter.ContentV
                         @Override
                         public void success(RateEventResponseModel responseModel, Response response) {
                             if (responseModel.isSucceed()) {
+                                if (event.getRate()==null){
+                                    event.setRate(new Rating());
+                                }
                                 event.getRate().setNumOfRate(responseModel.getRate().getNumOfRate());
                                 event.getRate().setPoint(responseModel.getRate().getPoint());
                                 event.getRate().setUserRate(responseModel.getRate().getUserRate());
