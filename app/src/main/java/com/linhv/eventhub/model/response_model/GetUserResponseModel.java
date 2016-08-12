@@ -4,9 +4,9 @@ import com.google.gson.annotations.SerializedName;
 import com.linhv.eventhub.model.User;
 
 /**
- * Created by ManhNV on 7/29/16.
+ * Created by ManhNV on 8/12/16.
  */
-public class CheckInResponseModel extends Response {
+public class GetUserResponseModel extends Response {
     @SerializedName("Data")
     private User user;
 

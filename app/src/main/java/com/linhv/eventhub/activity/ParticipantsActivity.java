@@ -1,6 +1,7 @@
 package com.linhv.eventhub.activity;
 
 import android.Manifest;
+import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -25,6 +26,7 @@ import com.google.zxing.Result;
 import com.linhv.eventhub.R;
 import com.linhv.eventhub.adapter.ParticipantTabAdapter;
 import com.linhv.eventhub.adapter.ParticipatedUserAdapter;
+import com.linhv.eventhub.dialog.UserInfoDialog;
 import com.linhv.eventhub.model.ParticipatedUser;
 import com.linhv.eventhub.model.User;
 import com.linhv.eventhub.model.request_model.CheckInRequestModel;
@@ -47,7 +49,7 @@ import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
 
-public class ParticipantsActivity extends AppCompatActivity  implements ZXingScannerView.ResultHandler{
+public class ParticipantsActivity extends AppCompatActivity implements ZXingScannerView.ResultHandler {
     private ZXingScannerView mScannerView;
     private ViewHolder viewHolder;
     private ParticipatedUserAdapter participatedUserAdapter;
@@ -73,18 +75,18 @@ public class ParticipantsActivity extends AppCompatActivity  implements ZXingSca
 
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        isStartCamera=false;
+        isStartCamera = false;
         checkPermissionCamera();
         init();
 
     }
 
-    private void init(){
+    private void init() {
         viewHolder = new ViewHolder();
         restService = new RestService();
-        eventId = getIntent().getIntExtra("eventId",-1);
-        userId = DataUtils.getINSTANCE(this).getmPreferences().getString(QuickSharePreferences.SHARE_USERID,"");
-         viewHolder.fab = (FloatingActionButton) findViewById(R.id.fab);
+        eventId = getIntent().getIntExtra("eventId", -1);
+        userId = DataUtils.getINSTANCE(this).getmPreferences().getString(QuickSharePreferences.SHARE_USERID, "");
+        viewHolder.fab = (FloatingActionButton) findViewById(R.id.fab);
         viewHolder.fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -92,13 +94,13 @@ public class ParticipantsActivity extends AppCompatActivity  implements ZXingSca
                 setContentView(mScannerView);
                 mScannerView.setResultHandler(ParticipantsActivity.this); // Register ourselves as a handler for scan results.
                 mScannerView.startCamera();
-                isStartCamera=true;
+                isStartCamera = true;
             }
         });
 //        viewHolder.test = (Button) findViewById(R.id.btn_test);
         viewHolder.lvUser = (ListView) findViewById(R.id.lv_participated_users);
         users = new ArrayList<>();
-        participatedUserAdapter = new ParticipatedUserAdapter(this,R.layout.item_participated_user,users);
+        participatedUserAdapter = new ParticipatedUserAdapter(this, R.layout.item_participated_user, users);
         viewHolder.lvUser.setAdapter(participatedUserAdapter);
 //        viewHolder.tabLayout = (TabLayout) findViewById(R.id.tabs_participant);
 //        viewHolder.viewPager = (ViewPager) findViewById(R.id.viewpager_participant);
@@ -111,18 +113,18 @@ public class ParticipantsActivity extends AppCompatActivity  implements ZXingSca
 //
 //            }
 //        });
-        
+
         loadData();
     }
 
-    private void loadData(){
+    private void loadData() {
         restService.getEventService().getParticipatedUsers(eventId, new Callback<GetParticipatedUsersResponseModel>() {
             @Override
             public void success(GetParticipatedUsersResponseModel responseModel, Response response) {
-                if (responseModel.isSucceed()){
-                    if (responseModel.getParticipatedUser().size()>0){
+                if (responseModel.isSucceed()) {
+                    if (responseModel.getParticipatedUser().size() > 0) {
                         participatedUserAdapter.setUsers(responseModel.getParticipatedUser());
-                    }else{
+                    } else {
                         Toast.makeText(ParticipantsActivity.this, responseModel.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 }
@@ -146,7 +148,7 @@ public class ParticipantsActivity extends AppCompatActivity  implements ZXingSca
             } else {
 
                 ActivityCompat.requestPermissions(this,
-                        new String[]{Manifest.permission.CAMERA},1999);
+                        new String[]{Manifest.permission.CAMERA}, 1999);
             }
         }
     }
@@ -169,8 +171,17 @@ public class ParticipantsActivity extends AppCompatActivity  implements ZXingSca
                 @Override
                 public void success(CheckInResponseModel responseModel, Response response) {
                     if (responseModel.isSucceed()) {
-                        onBackPressed();
-                        loadData();
+                        UserInfoDialog dialog = new UserInfoDialog(ParticipantsActivity.this, responseModel.getUser());
+                        dialog.setTitle("Thông tin người tham gia");
+                        dialog.show();
+                        dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                            @Override
+                            public void onDismiss(DialogInterface dialog) {
+                                onBackPressed();
+                                loadData();
+                            }
+                        });
+
 //                    if (responseModel.isSuccessfull()){
 //                        Toast.makeText(ParticipantsActivity.this, "Checked in", Toast.LENGTH_SHORT).show();
 //
@@ -188,17 +199,17 @@ public class ParticipantsActivity extends AppCompatActivity  implements ZXingSca
                     DataUtils.getINSTANCE(ParticipantsActivity.this).ConnectionError();
                 }
             });
-        }catch (Exception e){
-            Toast.makeText(ParticipantsActivity.this,"QR Code không hợp lệ", Toast.LENGTH_SHORT).show();
+        } catch (Exception e) {
+            Toast.makeText(ParticipantsActivity.this, "QR Code không hợp lệ", Toast.LENGTH_SHORT).show();
             recreate();
         }
 
     }
 
 
-    private class ViewHolder{
+    private class ViewHolder {
         ListView lvUser;
-//        Button test;
+        //        Button test;
 //        TabLayout tabLayout;
 //        ViewPager viewPager;
         FloatingActionButton fab;
@@ -208,7 +219,7 @@ public class ParticipantsActivity extends AppCompatActivity  implements ZXingSca
     public void onBackPressed() {
 //        super.onBackPressed();
         if (isStartCamera)
-       recreate();
+            recreate();
         else
             super.onBackPressed();
 //        overridePendingTransition(R.anim.left_in, R.anim.right_out);
@@ -217,32 +228,12 @@ public class ParticipantsActivity extends AppCompatActivity  implements ZXingSca
     @Override
     protected void onResume() {
         super.onResume();
-        Log.i("Bus","regist bus");
-        BusStation.getBus().register(this);
+        Log.i("Bus", "regist bus");
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        BusStation.getBus().unregister(this);
     }
 
-    @Subscribe
-    public void recievedMessage(final Message message){
-        Log.i("Bus","recieve bus");
-        Log.i("Bus Message",message.getMsg());
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                viewHolder.fab.setBackgroundColor(Color.parseColor("#ff0000"));
-//                viewHolder.test.setText(message.getMsg());
-//                viewHolder.test.setEnabled(false);
-//                viewHolder.test.setBackgroundColor(Color.RED);
-//stuff that updates ui
-
-            }
-        });
-
-//        Toast.makeText(ParticipantsActivity.this, message.getMsg(), Toast.LENGTH_SHORT).show();
-    }
 }

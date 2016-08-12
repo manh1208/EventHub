@@ -40,6 +40,7 @@ import com.linhv.eventhub.model.response_model.GetSurveyResponseModel;
 import com.linhv.eventhub.model.response_model.SubmitSurveyResponseModel;
 import com.linhv.eventhub.services.RestService;
 import com.linhv.eventhub.utils.DataUtils;
+import com.linhv.eventhub.utils.QuickSharePreferences;
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
@@ -67,6 +68,7 @@ public class SurveyActivity extends AppCompatActivity {
 //    private HashMap<Integer,Boolean> hashItem;
     private List<QuestionView> questionViews;
     private SurveyAnswer surveyAnswer;
+    private String userId;
 
 
     @Override
@@ -74,6 +76,7 @@ public class SurveyActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_survey);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        userId = DataUtils.getINSTANCE(this).getmPreferences().getString(QuickSharePreferences.SHARE_USERID,"");
         String actName = getIntent().getStringExtra("activityName");
         toolbar.setTitle(actName);
         setSupportActionBar(toolbar);
@@ -118,6 +121,7 @@ public class SurveyActivity extends AppCompatActivity {
         surveyAnswerWithOptions = new SurveyAnswerWithOptions();
         surveyAnswer = new SurveyAnswer();
         surveySubmit.setActivityId(activityId);
+        surveySubmit.setUserId(userId);
         surveySubmit.setSurveyAnswerWithOptions(surveyAnswerWithOptions);
         surveyAnswerWithOptions.setSurveyAnswer(surveyAnswer);
 
@@ -211,6 +215,7 @@ public class SurveyActivity extends AppCompatActivity {
                     }
 
                 }
+
                 surveyAnswerWithOptions.setSurveyResultItems(surveyResultItems);
                 if (flag) {
                     restService.getActivityService().submitSurvey(surveySubmit, new Callback<SubmitSurveyResponseModel>() {

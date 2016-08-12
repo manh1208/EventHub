@@ -11,6 +11,7 @@ import com.linhv.eventhub.model.response_model.FollowEventResponseModel;
 import com.linhv.eventhub.model.response_model.GetEventsResponseModel;
 import com.linhv.eventhub.model.response_model.GetMyTicketsResponseModel;
 import com.linhv.eventhub.model.response_model.GetNotificationResponseModel;
+import com.linhv.eventhub.model.response_model.GetUserResponseModel;
 import com.linhv.eventhub.model.response_model.LoginResponseModel;
 import com.linhv.eventhub.model.response_model.ReadNotificationResponseModel;
 import com.linhv.eventhub.model.response_model.RegisterResponseModel;
@@ -69,4 +70,8 @@ public interface IUserService {
     @GET("/api/userparticipation/gettickets")
     void getTickets(@Query("userId")String userId,
                     Callback<GetMyTicketsResponseModel> callback);
+
+    @GET("/api/userparticipation/GetUserByCode")
+    void getUserByCode(@Query("code")String code,
+                       Callback<GetUserResponseModel> callback);
 }

@@ -11,6 +11,9 @@ public class SurveySubmit {
     @SerializedName("Answers")
     private SurveyAnswerWithOptions surveyAnswerWithOptions;
 
+    @SerializedName("UserId")
+    private String userId;
+
     public int getActivityId() {
         return activityId;
     }
@@ -25,5 +28,9 @@ public class SurveySubmit {
 
     public void setSurveyAnswerWithOptions(SurveyAnswerWithOptions surveyAnswerWithOptions) {
         this.surveyAnswerWithOptions = surveyAnswerWithOptions;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 }
