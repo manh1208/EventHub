@@ -14,7 +14,9 @@ public class RestService {
     private IEventService eventService;
     private IActivityService activityService;
 
+
     public RestService() {
+
         restAdapter = new retrofit.RestAdapter.Builder()
                 .setEndpoint(URL)
                 .setLogLevel(retrofit.RestAdapter.LogLevel.FULL)

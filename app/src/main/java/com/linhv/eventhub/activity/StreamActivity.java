@@ -192,7 +192,6 @@ public class StreamActivity extends AppCompatActivity {
 //    }
 
 
-
     private void stopStream() {
 
         Log.i("Stream", "Stop Stream");
@@ -378,6 +377,38 @@ public class StreamActivity extends AppCompatActivity {
             start();
         } else {
             stop();
+        }
+    }
+
+    private void back() {
+        super.onBackPressed();
+        overridePendingTransition(R.anim.left_in,R.anim.right_out);
+    }
+
+    @Override
+    public void onBackPressed() {
+
+        if (isStart) {
+            AlertDialog.Builder buider = new AlertDialog.Builder(StreamActivity.this);
+            buider.setTitle("Cảnh báo")
+                    .setMessage("Bạn có muốn dừng kết nối không?")
+                    .setPositiveButton("Có", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            stop();
+                            back();
+                        }
+                    })
+                    .setNegativeButton("Khong", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+
+                        }
+                    }).create().show();
+//                    stop();
+        }else{
+            back();
         }
     }
 }

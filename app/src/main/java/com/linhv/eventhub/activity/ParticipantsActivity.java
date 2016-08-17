@@ -17,8 +17,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.ListViewCompat;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -90,11 +92,46 @@ public class ParticipantsActivity extends AppCompatActivity implements ZXingScan
         viewHolder.fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mScannerView = new ZXingScannerView(ParticipantsActivity.this);   // Programmatically initialize the scanner view
-                setContentView(mScannerView);
-                mScannerView.setResultHandler(ParticipantsActivity.this); // Register ourselves as a handler for scan results.
-                mScannerView.startCamera();
-                isStartCamera = true;
+                String[] title = new String[]{"Quét QR Code", "Nhập mã"};
+                AlertDialog.Builder buider = new AlertDialog.Builder(ParticipantsActivity.this);
+                buider.setTitle("Chọn cách nhập").setItems(title, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+//                        Toast.makeText(ParticipantsActivity.this, ""+which, Toast.LENGTH_SHORT).show();
+                        switch (which) {
+                            case 0:
+                                mScannerView = new ZXingScannerView(ParticipantsActivity.this);   // Programmatically initialize the scanner view
+                                setContentView(mScannerView);
+                                mScannerView.setResultHandler(ParticipantsActivity.this); // Register ourselves as a handler for scan results.
+                                mScannerView.startCamera();
+                                isStartCamera = true;
+                                break;
+                            case 1:
+                                AlertDialog.Builder inputCodeBuilder = new AlertDialog.Builder(ParticipantsActivity.this);
+                                View dialogView = LayoutInflater.from(ParticipantsActivity.this).inflate(R.layout.dialog_input_code,null);
+                                final EditText txtCode = (EditText) dialogView.findViewById(R.id.txt_your_code);
+
+                                inputCodeBuilder.setView(dialogView)
+                                        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                dialog.dismiss();
+                                            }
+                                        })
+                                        .setPositiveButton("Xong", new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                int code = Integer.parseInt(txtCode.getText().toString());
+                                                sendCode(code);
+                                            }
+                                        })
+                                        .create().show();
+
+                                break;
+                        }
+                    }
+                }).create().show();
+//
             }
         });
 //        viewHolder.test = (Button) findViewById(R.id.btn_test);
@@ -166,21 +203,30 @@ public class ParticipantsActivity extends AppCompatActivity implements ZXingScan
 //        alert1.show();
         try {
             int code = Integer.parseInt(result.getText());
+            sendCode(code);
 
-            restService.getEventService().checkInEvent(new CheckInRequestModel(userId, eventId, code), new Callback<CheckInResponseModel>() {
-                @Override
-                public void success(CheckInResponseModel responseModel, Response response) {
-                    if (responseModel.isSucceed()) {
-                        UserInfoDialog dialog = new UserInfoDialog(ParticipantsActivity.this, responseModel.getUser());
-                        dialog.setTitle("Thông tin người tham gia");
-                        dialog.show();
-                        dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
-                            @Override
-                            public void onDismiss(DialogInterface dialog) {
-                                onBackPressed();
-                                loadData();
-                            }
-                        });
+        } catch (Exception e) {
+            Toast.makeText(ParticipantsActivity.this, "QR Code không hợp lệ", Toast.LENGTH_SHORT).show();
+            recreate();
+        }
+
+    }
+
+    private void sendCode(int code) {
+        restService.getEventService().checkInEvent(new CheckInRequestModel(userId, eventId, code), new Callback<CheckInResponseModel>() {
+            @Override
+            public void success(CheckInResponseModel responseModel, Response response) {
+                if (responseModel.isSucceed()) {
+                    UserInfoDialog dialog = new UserInfoDialog(ParticipantsActivity.this, responseModel.getUser());
+                    dialog.setTitle("Thông tin người tham gia");
+                    dialog.show();
+                    dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                        @Override
+                        public void onDismiss(DialogInterface dialog) {
+                            onBackPressed();
+                            loadData();
+                        }
+                    });
 
 //                    if (responseModel.isSuccessfull()){
 //                        Toast.makeText(ParticipantsActivity.this, "Checked in", Toast.LENGTH_SHORT).show();
@@ -188,22 +234,17 @@ public class ParticipantsActivity extends AppCompatActivity implements ZXingScan
 //                    }else{
 //                        Toast.makeText(ParticipantsActivity.this, "Checked in Fail"+responseModel.getMessage(), Toast.LENGTH_SHORT).show();
 //                    }
-                    } else {
-                        Toast.makeText(ParticipantsActivity.this, responseModel.getErrorsString(), Toast.LENGTH_SHORT).show();
-                        recreate();
-                    }
+                } else {
+                    Toast.makeText(ParticipantsActivity.this, responseModel.getErrorsString(), Toast.LENGTH_SHORT).show();
+                    recreate();
                 }
+            }
 
-                @Override
-                public void failure(RetrofitError error) {
-                    DataUtils.getINSTANCE(ParticipantsActivity.this).ConnectionError();
-                }
-            });
-        } catch (Exception e) {
-            Toast.makeText(ParticipantsActivity.this, "QR Code không hợp lệ", Toast.LENGTH_SHORT).show();
-            recreate();
-        }
-
+            @Override
+            public void failure(RetrofitError error) {
+                DataUtils.getINSTANCE(ParticipantsActivity.this).ConnectionError();
+            }
+        });
     }
 
 

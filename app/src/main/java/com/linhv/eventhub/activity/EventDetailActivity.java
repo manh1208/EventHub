@@ -2,6 +2,7 @@ package com.linhv.eventhub.activity;
 
 import android.app.Activity;
 import android.app.ActivityManager;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -46,7 +47,8 @@ public class EventDetailActivity extends AppCompatActivity {
     private EventDetailTabAdapter detailTabAdapter;
     private String userId;
     private Menu menu;
-
+    private ProgressDialog progressDialog;
+    private int flag = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,9 +61,14 @@ public class EventDetailActivity extends AppCompatActivity {
     }
 
     private void getEventDetail() {
+        progressDialog.show();
         restService.getEventService().getEvent(eventId, userId, new Callback<GetEventDetailResponseModel>() {
             @Override
             public void success(GetEventDetailResponseModel responseModel, Response response) {
+
+
+                    progressDialog.dismiss();
+
                 if (responseModel.isSucceed()) {
                     event = responseModel.getEvent();
                     runOnUiThread(new Runnable() {
@@ -72,7 +79,7 @@ public class EventDetailActivity extends AppCompatActivity {
                     });
                     if (event.isFollowed()) {
                         menu.findItem(R.id.menu_detail_favorite).setIcon(R.drawable.favorited);
-                    }else{
+                    } else {
                         menu.findItem(R.id.menu_detail_favorite).setIcon(R.drawable.favorite);
                     }
                     Picasso.with(EventDetailActivity.this).load(Uri.parse(DataUtils.URL + event.getImageUrl()))
@@ -87,6 +94,10 @@ public class EventDetailActivity extends AppCompatActivity {
 
             @Override
             public void failure(RetrofitError error) {
+                flag++;
+                if (!(flag < 3)) {
+                    progressDialog.dismiss();
+                }
                 DataUtils.getINSTANCE(getApplicationContext()).ConnectionError();
             }
         });
@@ -112,6 +123,8 @@ public class EventDetailActivity extends AppCompatActivity {
                 onBackPressed();
             }
         });
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("Đang tải dữ liệu...");
         viewHolder.tabLayout = (TabLayout) findViewById(R.id.tabs_event_detail);
         viewHolder.viewPager = (ViewPager) findViewById(R.id.viewpager_event_detail);
         detailTabAdapter = new EventDetailTabAdapter(getSupportFragmentManager(), eventId);
@@ -125,14 +138,15 @@ public class EventDetailActivity extends AppCompatActivity {
             }
         });
         viewHolder.image = (CustomImage) findViewById(R.id.iv_detail_event_cover);
-
         getComponent();
     }
 
     private void getComponent() {
+        progressDialog.show();
         restService.getEventService().getComponent(eventId, new Callback<GetEventComponentResponseModel>() {
             @Override
             public void success(GetEventComponentResponseModel responseModel, Response response) {
+                progressDialog.dismiss();
                 if (responseModel.isSucceed()) {
                     components = responseModel.getComponents();
                     detailTabAdapter.setComponents(components);
@@ -142,7 +156,11 @@ public class EventDetailActivity extends AppCompatActivity {
 
             @Override
             public void failure(RetrofitError error) {
-
+                flag++;
+                if (!(flag < 3)) {
+                    progressDialog.dismiss();
+                }
+                DataUtils.getINSTANCE(EventDetailActivity.this).ConnectionError();
             }
         });
     }
@@ -157,7 +175,7 @@ public class EventDetailActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.detail, menu);
-        this.menu  = menu;
+        this.menu = menu;
         return true;
     }
 
@@ -166,20 +184,22 @@ public class EventDetailActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         final MenuItem finalItem = item;
         int id = item.getItemId();
-        switch (id){
+        switch (id) {
             case R.id.menu_detail_favorite:
+                progressDialog.show();
                 restService.getUserService().followEvent(eventId, userId, new Callback<FollowEventResponseModel>() {
                     @Override
                     public void success(FollowEventResponseModel responseModel, Response response) {
+                        progressDialog.dismiss();
                         if (responseModel.isSucceed()) {
 
-                                if (responseModel.getFollow().isActive()) {
-                                    finalItem.setIcon(R.drawable.favorited);
-                                    Toast.makeText(EventDetailActivity.this, "Event was saved", Toast.LENGTH_SHORT).show();
-                                } else {
-                                    finalItem.setIcon(R.drawable.favorite);
-                                    Toast.makeText(EventDetailActivity.this, "Event was unsaved", Toast.LENGTH_SHORT).show();
-                                }
+                            if (responseModel.getFollow().isActive()) {
+                                finalItem.setIcon(R.drawable.favorited);
+                                Toast.makeText(EventDetailActivity.this, "Event was saved", Toast.LENGTH_SHORT).show();
+                            } else {
+                                finalItem.setIcon(R.drawable.favorite);
+                                Toast.makeText(EventDetailActivity.this, "Event was unsaved", Toast.LENGTH_SHORT).show();
+                            }
 
 
                         }
@@ -187,6 +207,10 @@ public class EventDetailActivity extends AppCompatActivity {
 
                     @Override
                     public void failure(RetrofitError error) {
+                        flag++;
+                        if (!(flag < 3)) {
+                            progressDialog.dismiss();
+                        }
                         Toast.makeText(EventDetailActivity.this, error.getResponse().getReason(), Toast.LENGTH_SHORT).show();
                     }
                 });

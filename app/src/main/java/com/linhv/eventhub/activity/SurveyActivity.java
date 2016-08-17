@@ -1,5 +1,6 @@
 package com.linhv.eventhub.activity;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.graphics.Color;
 import android.net.Uri;
@@ -69,6 +70,7 @@ public class SurveyActivity extends AppCompatActivity {
     private List<QuestionView> questionViews;
     private SurveyAnswer surveyAnswer;
     private String userId;
+    private ProgressDialog progressDialog;
 
 
     @Override
@@ -100,11 +102,16 @@ public class SurveyActivity extends AppCompatActivity {
         activityId = getIntent().getIntExtra("activityId", -1);
         viewHolder = new ViewHolder();
         restService = new RestService();
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("Đang tải đử liệu...");
 //        viewHolder.lvQuestions = (ListView) findViewById(R.id.lv_survey_question);
         viewHolder.ll_survey = (LinearLayout) findViewById(R.id.ll_survey);
+        progressDialog.show();
+        progressDialog.setCanceledOnTouchOutside(false);
         restService.getActivityService().getSurvey(activityId, new Callback<GetSurveyResponseModel>() {
             @Override
             public void success(GetSurveyResponseModel responseModel, Response response) {
+                progressDialog.dismiss();
                 if (responseModel.isSucceed()) {
                     surveyResponse = responseModel.getSurveyResponse();
                     surveyQuestionGroups = surveyResponse.getSurveyQuestionGroups();
@@ -114,7 +121,8 @@ public class SurveyActivity extends AppCompatActivity {
 
             @Override
             public void failure(RetrofitError error) {
-
+                progressDialog.dismiss();
+                DataUtils.getINSTANCE(SurveyActivity.this).ConnectionError();
             }
         });
         surveySubmit = new SurveySubmit();
@@ -253,7 +261,7 @@ public class SurveyActivity extends AppCompatActivity {
         viewHolder.ll_survey.removeAllViews();
         final View headerView = ((LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(
                 R.layout.item_survey_header, null, false);
-        ((TextView) headerView.findViewById(R.id.txt_survey_name)).setText(surveyResponse.getSurvey().getName() + "ManhNv");
+        ((TextView) headerView.findViewById(R.id.txt_survey_name)).setText(surveyResponse.getSurvey().getName() + "");
         String url = DataUtils.URL + surveyResponse.getSurvey().getImageUrl();
         ImageView ivImage = (ImageView) headerView.findViewById(R.id.iv_survey_image);
         Picasso.with(SurveyActivity.this).load(Uri.parse(url))

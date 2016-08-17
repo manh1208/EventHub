@@ -135,8 +135,12 @@
                 android:background="@drawable/background_organizer"
                 android:paddingLeft="10sp"
                 android:paddingRight="10sp"
-                android:text="Nhà tổ chức"
+                android:text="Info"
+                android:drawableLeft="@drawable/eye"
+                android:drawablePadding="2sp"
+                android:textAllCaps="false"
                 android:textColor="#fff" />
+
             <Button
                 android:id="@+id/btn_event_participant"
                 android:layout_width="wrap_content"
@@ -144,10 +148,13 @@
                 android:layout_marginLeft="10sp"
                 android:layout_toRightOf="@+id/btn_event_organizer"
                 android:background="@drawable/background_organizer"
-                android:paddingLeft="10sp"
-                android:paddingRight="10sp"
+                android:paddingLeft="5sp"
+                android:paddingRight="5sp"
                 android:text="Người tham gia"
-                android:visibility="gone"
+                android:drawableLeft="@drawable/participate"
+                android:drawablePadding="5sp"
+                android:visibility="visible"
+                android:textAllCaps="false"
                 android:textColor="#fff" />
 
         </RelativeLayout>
@@ -168,7 +175,7 @@
             android:paddingLeft="10sp"
             android:paddingRight="10sp"
             android:text="Đăng ký"
-            android:visibility="visible"
+            android:visibility="gone"
             android:textSize="20sp"
             android:padding="10sp"
             android:textColor="#fff" />
