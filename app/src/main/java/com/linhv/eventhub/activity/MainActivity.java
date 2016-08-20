@@ -6,6 +6,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -25,6 +27,10 @@ import android.widget.Toast;
 
 import com.facebook.FacebookSdk;
 import com.facebook.login.LoginManager;
+import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.common.api.Status;
 import com.linhv.eventhub.R;
 import com.linhv.eventhub.custom.RoundedImageView;
 import com.linhv.eventhub.fragment.EventStoragedFragment;
@@ -211,6 +217,9 @@ public class MainActivity extends AppCompatActivity
                 fragment = new NotificationFragment();
                 break;
             case R.id.nav_logout:
+                if (DataUtils.mGoogleApiClient!=null){
+                    signOut();
+                }
                 DataUtils.getINSTANCE(getApplicationContext()).getmPreferences().edit().clear().commit();
                 FacebookSdk.sdkInitialize(getApplicationContext());
                 LoginManager.getInstance().logOut();
@@ -230,6 +239,38 @@ public class MainActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    public void signOut() {
+//        DataUtils.getINSTANCE(getApplicationContext()).getmPreferences().edit().putBoolean(DataUtils.SHARE_LOGIN_GOOGLE,false).commit();
+        DataUtils.mGoogleApiClient.connect();
+        DataUtils.mGoogleApiClient.registerConnectionCallbacks(new GoogleApiClient.ConnectionCallbacks() {
+            @Override
+            public void onConnected(@Nullable Bundle bundle) {
+//                Toast.makeText(MainActivity.this, "Connected", Toast.LENGTH_SHORT).show();
+                if(DataUtils.mGoogleApiClient.isConnected()) {
+                    Auth.GoogleSignInApi.signOut(DataUtils.mGoogleApiClient).setResultCallback(new ResultCallback<Status>() {
+                        @Override
+                        public void onResult(@NonNull Status status) {
+                            if (status.isSuccess()) {
+//                                DbUtil dbUtil = new DbUtil(getApplicationContext());
+//                                QuestionDAO questionDAO = new QuestionDAO(dbUtil);
+//                                questionDAO.resetQuestion();
+//                                Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+//                                startActivity(intent);
+//                                DataUtils.getINSTANCE(getApplicationContext()).getmPreferences().edit().clear().commit();
+//                                finish();
+                            }
+                        }
+                    });
+                }
+            }
+
+            @Override
+            public void onConnectionSuspended(int i) {
+//                Log.d(TAG, "Google API Client Connection Suspended");
+            }
+        });
     }
 
     private class ViewHolder {

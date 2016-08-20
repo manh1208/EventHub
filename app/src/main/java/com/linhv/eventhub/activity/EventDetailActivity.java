@@ -12,9 +12,11 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.linhv.eventhub.R;
@@ -62,6 +64,7 @@ public class EventDetailActivity extends AppCompatActivity {
 
     private void getEventDetail() {
         progressDialog.show();
+        Log.i("EventDetail","GeteventDetail");
         restService.getEventService().getEvent(eventId, userId, new Callback<GetEventDetailResponseModel>() {
             @Override
             public void success(GetEventDetailResponseModel responseModel, Response response) {
@@ -71,21 +74,29 @@ public class EventDetailActivity extends AppCompatActivity {
 
                 if (responseModel.isSucceed()) {
                     event = responseModel.getEvent();
+                    viewHolder.txtToolbarTitle = (TextView) findViewById(R.id.toolbar_title);
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            viewHolder.toolbar.setTitle(event.getName());
+//                            viewHolder.toolbar.setTitle(event.getName());
+                            viewHolder.txtToolbarTitle.setText(eventName);
+                            Picasso.with(EventDetailActivity.this).load(Uri.parse(DataUtils.URL + event.getImageUrl()))
+                                    .placeholder(R.drawable.placeholder)
+                                    .error(R.drawable.placeholder)
+                                    .into(viewHolder.image);
                         }
                     });
+                    viewHolder.txtToolbarTitle.setText(eventName);
+                    Picasso.with(EventDetailActivity.this).load(Uri.parse(DataUtils.URL + event.getImageUrl()))
+                            .placeholder(R.drawable.placeholder)
+                            .error(R.drawable.placeholder)
+                            .into(viewHolder.image);
                     if (event.isFollowed()) {
                         menu.findItem(R.id.menu_detail_favorite).setIcon(R.drawable.favorited);
                     } else {
                         menu.findItem(R.id.menu_detail_favorite).setIcon(R.drawable.favorite);
                     }
-                    Picasso.with(EventDetailActivity.this).load(Uri.parse(DataUtils.URL + event.getImageUrl()))
-                            .placeholder(R.drawable.placeholder)
-                            .error(R.drawable.placeholder)
-                            .into(viewHolder.image);
+
 //                    Toast.makeText(EventDetailActivity.this, event.getName(), Toast.LENGTH_SHORT).show();
                 } else {
                     Toast.makeText(EventDetailActivity.this, responseModel.getErrorsString(), Toast.LENGTH_SHORT).show();
@@ -112,7 +123,9 @@ public class EventDetailActivity extends AppCompatActivity {
         viewHolder.toolbar = (Toolbar) findViewById(R.id.toolbar);
         eventId = getIntent().getIntExtra("eventId", -1);
         eventName = getIntent().getStringExtra("eventName");
-        viewHolder.toolbar.setTitle(eventName);
+//        viewHolder.toolbar.setTitle(eventName);
+        viewHolder.txtToolbarTitle = (TextView) findViewById(R.id.toolbar_title);
+        viewHolder.txtToolbarTitle.setText(eventName);
         userId = DataUtils.getINSTANCE(this).getmPreferences().getString(QuickSharePreferences.SHARE_USERID, "");
         setSupportActionBar(viewHolder.toolbar);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
@@ -170,6 +183,7 @@ public class EventDetailActivity extends AppCompatActivity {
         TabLayout tabLayout;
         CustomImage image;
         Toolbar toolbar;
+        TextView txtToolbarTitle;
     }
 
     @Override

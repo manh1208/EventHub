@@ -37,9 +37,21 @@
                 android:id="@+id/toolbar"
                 android:title="ahihi"
                 android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
+                android:layout_height="wrap_content"
                 app:popupTheme="@style/AppTheme.PopupOverlay"
-                app:layout_collapseMode="pin" />
+                app:layout_collapseMode="pin"
+
+                >
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="ahihi"
+                    android:textSize="20sp"
+                    android:textColor="#fff"
+                    android:id="@+id/toolbar_title"
+                    android:layout_marginTop="15sp"
+                    />
+            </android.support.v7.widget.Toolbar>
         </android.support.design.widget.CollapsingToolbarLayout>
 
 

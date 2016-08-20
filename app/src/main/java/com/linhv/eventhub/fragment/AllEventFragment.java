@@ -260,7 +260,12 @@ public class AllEventFragment extends Fragment implements MenuItemCompat.OnActio
             @Override
             public void success(GetEventsResponseModel responseModel, Response response) {
                 if (responseModel.isSucceed()){
-                    eventAdapter.setEventList(responseModel.getEvents());
+                    if (responseModel.getEvents().size()>0) {
+                        eventAdapter.setEventList(responseModel.getEvents());
+                    }else{
+                        Toast.makeText(getActivity(), "Không tìm thấy", Toast.LENGTH_SHORT).show();
+                        eventAdapter.setEventList(mEvents);
+                    }
                 }
             }
 

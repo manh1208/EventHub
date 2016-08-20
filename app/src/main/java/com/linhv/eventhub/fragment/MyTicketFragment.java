@@ -70,6 +70,7 @@ public class MyTicketFragment extends Fragment {
                             TicketDialog ticketDialog = new TicketDialog(getActivity(),userParticipation);
                             ticketDialog.setTitle("Vé của bạn");
                             ticketDialog.show();
+
                         }
                     }
 

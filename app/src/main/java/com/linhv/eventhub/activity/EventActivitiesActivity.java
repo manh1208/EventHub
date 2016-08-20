@@ -6,6 +6,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
@@ -17,8 +18,13 @@ import com.linhv.eventhub.enumeration.ActivityEnum;
 import com.linhv.eventhub.model.Activity;
 import com.linhv.eventhub.model.Event;
 import com.linhv.eventhub.model.response_model.GetActivityPublishedResponseModel;
+import com.linhv.eventhub.otto.BusStation;
+import com.linhv.eventhub.otto.Message;
+import com.linhv.eventhub.otto.NewActivity;
 import com.linhv.eventhub.services.RestService;
 import com.linhv.eventhub.utils.DataUtils;
+import com.squareup.otto.Bus;
+import com.squareup.otto.Subscribe;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -125,4 +131,24 @@ public class EventActivitiesActivity extends AppCompatActivity {
         }
 
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Log.i("Otto", "Đăng ký");
+        BusStation.getBus().register(this);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Log.i("Otto", "Hủy đăng ký");
+        BusStation.getBus().unregister(this);
+    }
+
+    @Subscribe
+    public void change(NewActivity newActivity) {
+       loadData();
+    }
+
 }
