@@ -4,10 +4,10 @@
     android:layout_height="wrap_content"
     android:descendantFocusability="blocksDescendants"
     android:orientation="vertical"
-    android:paddingLeft="10sp"
-    android:paddingRight="10sp"
-    android:paddingTop="10sp"
-    android:paddingBottom="10sp">
+    android:paddingLeft="0sp"
+    android:paddingRight="0sp"
+    android:paddingTop="5sp"
+    android:paddingBottom="5sp">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -55,9 +55,8 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="20sp"
+                android:layout_marginLeft="10sp"
                 android:layout_marginTop="5sp"
-                android:layout_toLeftOf="@+id/btn_top_event_save"
                 android:orientation="vertical">
 
                 <com.linhv.eventhub.custom.CustomTextViewLight
